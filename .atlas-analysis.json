@@ -1,0 +1,115 @@
+{
+  "projectType": "frontend",
+  "projectName": "shadcn-docs-template",
+  "projectDescription": "A production-ready documentation site template built with Nuxt 4, shadcn-vue, and Tailwind CSS 4 — featuring dark mode, search, MDC components, and customizable navigation.",
+  "theme": "willow",
+  "primaryColor": "#18181b",
+  "lightColor": "#fafafa",
+  "darkColor": "#09090b",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "installation"
+            ]
+          },
+          {
+            "group": "Customization",
+            "pages": [
+              "customization/overview",
+              "customization/mdc-components",
+              "customization/composables",
+              "customization/writing-docs"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Layout",
+            "pages": [
+              "components/site-header",
+              "components/site-footer",
+              "components/site-body",
+              "components/site-config",
+              "components/page-header",
+              "components/page-header-heading",
+              "components/page-header-description",
+              "components/main-nav",
+              "components/mobile-nav"
+            ]
+          },
+          {
+            "group": "Navigation",
+            "pages": [
+              "components/docs-sidebar",
+              "components/docs-table-of-contents",
+              "components/command-menu",
+              "components/command-menu-item",
+              "components/command-menu-kbd"
+            ]
+          },
+          {
+            "group": "Content",
+            "pages": [
+              "components/callout",
+              "components/doc-tabs",
+              "components/component-preview",
+              "components/steps",
+              "components/code-block-command",
+              "components/copy-button",
+              "components/copy-code-button",
+              "components/docs-copy-page"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "components/lucide-icon",
+              "components/mode-switcher",
+              "components/github-link",
+              "components/og-image"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Nuxt 4 & Nuxt Content 3 powered documentation site",
+    "shadcn-vue component integration with full component catalog",
+    "Tailwind CSS 4 for modern, utility-first styling",
+    "MDC (Markdown Components) for rich interactive content — Callout, ComponentPreview, Steps, DocTabs",
+    "Built-in dark/light mode via @nuxtjs/color-mode",
+    "Command palette search (⌘K / Ctrl+K) with full-text search",
+    "ISR (Incremental Static Regeneration) for optimal performance",
+    "OG image generation for social sharing",
+    "Auto-generated sidebar navigation from content directory structure",
+    "Composables for user preferences (layout, package manager, color format)"
+  ],
+  "publicApiSurface": [
+    "SiteConfig — siteConfig object in app/lib/siteConfig.ts",
+    "MAIN_NAVIGATION — NavItem[] in app/lib/navigation.ts",
+    "NAV_SECTIONS — NavItem[] in app/lib/navigation.ts",
+    "SIDEBAR_EXCLUDED_SECTIONS — string[] in app/lib/navigation.ts",
+    "SIDEBAR_EXCLUDED_PAGES — string[] in app/lib/navigation.ts",
+    "::callout{type} — MDC Callout component (default|info|warning|error|success|note|tip|danger)",
+    "::component-preview{name, align, description, hideCode} — MDC ComponentPreview",
+    "::component-source{name, title} — MDC ComponentSource",
+    "::steps / ::step — MDC Steps component",
+    "::::doc-tabs / :::doc-tabs-list / ::doc-tabs-trigger / :::doc-tabs-content — MDC DocTabs",
+    "::code-block-command{code} — MDC CodeBlockCommand",
+    ":ContentKbd[] — Inline keyboard shortcut component",
+    "useIsMac() — composable for platform detection",
+    "useNavigation() — composable for sidebar navigation data",
+    "useConfig() — composable for user preferences (layout, packageManager, installationType)",
+    "useColor() — composable for color format management"
+  ]
+}
