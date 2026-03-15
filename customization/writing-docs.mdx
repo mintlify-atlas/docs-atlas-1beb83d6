@@ -1,0 +1,286 @@
+---
+title: Writing Documentation
+description: How to create, structure, and enhance documentation pages in the shadcn-docs-template.
+---
+
+This guide covers everything from creating a new `.md` file to using MDC components for rich interactive content.
+
+---
+
+## File Location and URL Mapping
+
+Documentation files live in the `content/docs/` directory and are written in Markdown (`.md`).
+
+| File path | Resulting URL |
+| --- | --- |
+| `content/docs/my-page.md` | `/docs/my-page` |
+| `content/docs/category/my-page.md` | `/docs/category/my-page` |
+| `content/docs/1.getting-started/1.introduction.md` | `/docs/getting-started/introduction` |
+
+<Note>
+Numeric prefixes (e.g., `1.`, `2.`) are stripped from the final URL but control the order of items in the sidebar navigation.
+</Note>
+
+---
+
+## File Naming Conventions
+
+- Use **lowercase with hyphens**: `getting-started.md`
+- Use **numbered prefixes** for ordering: `1.introduction.md`, `2.setup.md`
+- **Group related files** in subdirectories: `content/docs/1.getting-started/`
+- Keep filenames **descriptive and concise**
+
+### Example Directory Structure
+
+```
+content/
+└── docs/
+    ├── 1.getting-started/
+    │   ├── .navigation.yml
+    │   ├── 1.introduction.md
+    │   └── 2.installation.md
+    ├── 2.customization/
+    │   ├── .navigation.yml
+    │   ├── 1.customization.md
+    │   └── 2.mdc-components.md
+    └── prose-demo.md
+```
+
+---
+
+## Frontmatter
+
+Every documentation file must start with a YAML frontmatter block.
+
+```yaml
+---
+title: My Page Title
+description: A brief description of what this page covers.
+links:
+  doc: https://external-docs.com
+  api: https://api-reference.com
+navigation:
+  icon: lucide:book-open
+---
+```
+
+### Frontmatter Fields
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `title` | Yes | Page title rendered as the main `<h1>` and used in `<title>` and OG tags |
+| `description` | Recommended | Subtitle for the page; also used for SEO meta description |
+| `links` | No | Badges rendered at the top of the page for quick access to external resources |
+| `links.doc` | No | Link to external documentation |
+| `links.api` | No | Link to an API reference |
+| `navigation.icon` | No | Icon displayed in the sidebar. Uses [Lucide Icons](https://lucide.dev/icons) with the `lucide:` prefix |
+
+---
+
+## Navigation YAML
+
+Each directory group can have a `.navigation.yml` file that sets the group title and icon displayed in the sidebar.
+
+```yaml
+# content/docs/1.getting-started/.navigation.yml
+title: Getting Started
+icon: lucide:square-play
+```
+
+The `icon` field uses the `lucide:` prefix followed by any icon name from [lucide.dev/icons](https://lucide.dev/icons).
+
+---
+
+## Markdown Basics
+
+### Headings
+
+```markdown
+# Page Title (h1 — usually set by frontmatter)
+## Section (h2)
+### Subsection (h3)
+#### Detail (h4)
+```
+
+### Emphasis and Inline Code
+
+```markdown
+**Bold text**
+*Italic text*
+~~Strikethrough~~
+`inline code`
+```
+
+### Lists
+
+```markdown
+- Unordered item
+- Another item
+
+1. First ordered item
+2. Second ordered item
+```
+
+### Links
+
+```markdown
+[Link text](https://example.com)
+[Internal link](/docs/getting-started/introduction)
+```
+
+### Code Blocks
+
+Always include a language tag for syntax highlighting:
+
+````markdown
+```vue
+<template>
+  <div>Hello World</div>
+</template>
+```
+````
+
+````markdown
+```typescript
+const greeting: string = "Hello World";
+```
+````
+
+### Tables
+
+```markdown
+| Column 1 | Column 2 | Column 3 |
+| --- | --- | --- |
+| Value 1 | Value 2 | Value 3 |
+| Value 4 | Value 5 | Value 6 |
+```
+
+### Blockquotes
+
+```markdown
+> This is a blockquote.
+```
+
+---
+
+## Callouts
+
+Use the `::callout` MDC component for highlighted information blocks. See [MDC Components](/customization/mdc-components) for the full list of variants.
+
+```markdown
+::callout{type="info"}
+This page is still a work in progress.
+::
+
+::callout{type="warning"}
+This action cannot be undone.
+::
+
+::callout{type="tip"}
+Use numbered prefixes to control sidebar order.
+::
+```
+
+---
+
+## ComponentPreview
+
+Use `::component-preview` to embed a live interactive component with its source code in a tabbed viewer.
+
+```markdown
+::component-preview
+---
+name: ButtonDemo
+description: A basic button example.
+align: center
+---
+::
+```
+
+The component resolver checks these paths in order:
+
+1. `components/demo/ButtonDemo.vue`
+2. `components/demo/ButtonDemo/index.vue`
+3. `components/ui/buttondemo/ButtonDemo.vue`
+4. `components/ui/ButtonDemo.vue`
+
+Shorthand inline syntax also works:
+
+```markdown
+::component-preview{name="ButtonDemo" align="end"}
+```
+
+To show the preview without the code tab:
+
+```markdown
+::component-preview{name="ButtonDemo" hideCode}
+```
+
+---
+
+## ComponentSource
+
+Use `::component-source` when you only want to display source code without an interactive preview.
+
+```markdown
+::component-source
+---
+name: Input
+title: components/ui/input/Input.vue
+---
+::
+```
+
+---
+
+## Keyboard Shortcuts
+
+Use the inline `:ContentKbd[]` syntax to render styled keyboard keys:
+
+```markdown
+Press :ContentKbd[⌘ K] to open the command menu.
+
+Press :ContentKbd[Ctrl K] on Windows and Linux.
+
+Use :ContentKbd[⇧ ⌘ P] to open the command palette.
+```
+
+The text inside the square brackets is rendered inside a styled `<kbd>` element.
+
+---
+
+## Steps
+
+Use `::steps` with heading-level step titles to create a numbered instruction list with a vertical guide line.
+
+```markdown
+::steps
+### Install dependencies
+
+Run `pnpm install` in the project root.
+
+### Configure siteConfig
+
+Open `app/lib/siteConfig.ts` and update the `name`, `url`, and `description`.
+
+### Start the dev server
+
+Run `pnpm dev` and navigate to `http://localhost:3000`.
+::
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Customization Overview" href="/customization/overview">
+    Configure navigation, sidebar, and branding.
+  </Card>
+  <Card title="MDC Components" href="/customization/mdc-components">
+    Full reference for all MDC components and their props.
+  </Card>
+  <Card title="Composables" href="/customization/composables">
+    Reusable Vue composables for platform detection and user preferences.
+  </Card>
+</CardGroup>

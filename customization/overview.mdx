@@ -1,0 +1,224 @@
+---
+title: Customization Overview
+description: How to personalize the shadcn-docs-template — from branding and navigation links to the command menu search palette.
+---
+
+This guide walks you through every touchpoint you need to personalize this template. Start with `siteConfig.ts` for branding, then adjust `navigation.ts` for links and sidebar behavior.
+
+## Site Configuration
+
+The central place for branding and links is `app/lib/siteConfig.ts`. Update these values first.
+
+### Type Definition
+
+```ts
+// app/lib/siteConfig.ts
+export type Links = {
+  github: string;
+  githubAPI: string;
+};
+
+export type SiteConfig = {
+  name: string;
+  url: string;
+  ogImage: string;
+  description: string;
+  links: Links;
+};
+```
+
+### Default Configuration
+
+```ts
+const repoUrl = "https://github.com/hetari/shadcn-docs-template";
+
+export const siteConfig: SiteConfig = {
+  name: "shadcn-docs-template",
+  url: repoUrl,
+  ogImage:
+    "https://raw.githubusercontent.com/hetari/shadcn-docs-template/master/public/og.png",
+  description:
+    "Simple, powerful and flexible site generation framework with everything you love from Nuxt.js & Shadcn Vue",
+  links: {
+    github: repoUrl,
+    githubAPI: "https://api.github.com/repos/hetari/shadcn-docs-template",
+  },
+};
+```
+
+| Field | Purpose |
+| --- | --- |
+| `name` | Shown in header and OG tags |
+| `url` | Canonical site URL |
+| `ogImage` | Social sharing image URL |
+| `description` | Short project description |
+| `links.github` | GitHub repository URL |
+| `links.githubAPI` | GitHub API endpoint for repo metadata |
+
+---
+
+## Navigation Configuration
+
+All navigation is controlled through constants in `app/lib/navigation.ts`.
+
+### Type Definition
+
+```ts
+export type NavItem = {
+  name: string;
+  href: string;
+};
+```
+
+### All Constants
+
+```ts
+// app/lib/navigation.ts
+
+/** Top-level/main site navigation items primarily used in the site header. */
+export const MAIN_NAVIGATION: NavItem[] = [
+  { href: "/docs/getting-started/introduction", name: "Docs" },
+  { href: "/docs/prose-demo", name: "Demo" },
+];
+
+/** Top-level section pills shown in the sidebar and mobile menu. */
+export const NAV_SECTIONS: NavItem[] = [
+  { name: "Get Started", href: "/docs/getting-started/introduction" },
+];
+
+/** Sidebar group titles (lowercased) that should never be rendered. */
+export const SIDEBAR_EXCLUDED_SECTIONS: string[] = [];
+
+/** Individual page paths that should be hidden from the sidebar page list. */
+export const SIDEBAR_EXCLUDED_PAGES: string[] = ["/docs/introduction"];
+```
+
+### Constants Reference
+
+| Constant | Controls | Used By |
+| --- | --- | --- |
+| `MAIN_NAVIGATION` | Main navigation links in header | `MainNav.vue`, `MobileNav.vue`, Command menu |
+| `NAV_SECTIONS` | Section pills in sidebar and mobile menu | `DocsSidebar.vue`, `MobileNav.vue` |
+| `SIDEBAR_EXCLUDED_SECTIONS` | Hides entire sidebar groups by title (case-insensitive) | `DocsSidebar.vue` |
+| `SIDEBAR_EXCLUDED_PAGES` | Hides specific pages from sidebar page list | `DocsSidebar.vue` |
+
+---
+
+## Desktop Navigation
+
+**File:** `app/components/MainNav.vue`
+
+The desktop navigation displays horizontal navigation buttons in the header. It receives navigation items from `MAIN_NAVIGATION` via props and does not need to be edited directly — update the constant in `navigation.ts` instead.
+
+---
+
+## Mobile Navigation
+
+**File:** `app/components/MobileNav.vue`
+
+The mobile navigation renders a hamburger menu that opens a full-screen overlay containing three distinct sections.
+
+<CardGroup cols={3}>
+  <Card title="1. Menu Section" icon="menu">
+    Renders a hardcoded "Home" link to `/` followed by all items from `MAIN_NAVIGATION`.
+  </Card>
+  <Card title="2. Sections Section" icon="layers">
+    Renders the section pills sourced from `NAV_SECTIONS`. Entries with `/mcp` in their `href` are filtered by the `showMcpDocs` flag.
+  </Card>
+  <Card title="3. Content Tree" icon="file-tree">
+    Auto-generated from the `content/docs/` directory structure. Contains all documentation pages organized by folder hierarchy.
+  </Card>
+</CardGroup>
+
+<Warning>
+Hiding a section via `SIDEBAR_EXCLUDED_SECTIONS` only affects the desktop sidebar. Those pages remain accessible via direct URL and still appear in the mobile menu content tree.
+</Warning>
+
+---
+
+## Sidebar Excluded Sections
+
+`SIDEBAR_EXCLUDED_SECTIONS` hides entire sidebar groups by their title. Matching is **case-insensitive** against the group title.
+
+```ts
+export const SIDEBAR_EXCLUDED_SECTIONS: string[] = [
+  "installation",  // Hides the "Installation" group
+  "dark mode",     // Hides the "Dark Mode" group
+];
+```
+
+Add the section title in lowercase to hide it from the desktop sidebar.
+
+---
+
+## Sidebar Excluded Pages
+
+`SIDEBAR_EXCLUDED_PAGES` hides individual pages from the sidebar using **exact path matching**.
+
+```ts
+export const SIDEBAR_EXCLUDED_PAGES: string[] = [
+  "/docs/introduction",
+];
+```
+
+<Note>
+This is useful for hiding pages that are still relevant but would clutter the sidebar — for example, an introduction page that is already linked in the header.
+</Note>
+
+---
+
+## Feature Flag: showMcpDocs
+
+**File:** `app/lib/flag.ts`
+
+Controls whether MCP (Model Context Protocol) documentation sections and sidebar entries are visible.
+
+```ts
+/**
+ * Model Context Protocol (MCP) documentation visibility flag.
+ * Controls whether MCP-related content and sidebar sections are visible.
+ * Set to true to show MCP docs (e.g., in development or feature rollout),
+ * or false to hide them (e.g., in production if not ready).
+ */
+export const showMcpDocs = true;
+```
+
+When `showMcpDocs` is `false`:
+- `NAV_SECTIONS` entries with `/mcp` in their `href` are filtered out of the mobile menu
+- MCP sidebar sections are hidden
+
+<Tip>
+Set `showMcpDocs = false` to cleanly remove all MCP-related navigation in a single place without deleting any content files.
+</Tip>
+
+---
+
+## Command Menu Search
+
+**File:** `app/components/CommandMenu.vue`
+
+The command palette opens via <kbd>⌘ K</kbd> on Mac or <kbd>Ctrl K</kbd> on Windows/Linux and provides instant search over pages, colors, and blocks.
+
+### Adding Custom Items
+
+<Steps>
+  <Step>Add a new prop or data source to the `Props` interface in `CommandMenu.vue`.</Step>
+  <Step>Add a new `<CommandGroup>` block inside `<CommandList>` with your items.</Step>
+  <Step>Pass the data from `SiteHeader.vue` where `CommandMenu` is rendered.</Step>
+</Steps>
+
+---
+
+## Quick Reference
+
+| What to Change | Edit This File | Constant / Variable |
+| --- | --- | --- |
+| Desktop header links | `app/lib/navigation.ts` | `MAIN_NAVIGATION` |
+| Mobile menu main links | `app/lib/navigation.ts` | `MAIN_NAVIGATION` |
+| Sidebar section pills | `app/lib/navigation.ts` | `NAV_SECTIONS` |
+| Hide entire sidebar group | `app/lib/navigation.ts` | `SIDEBAR_EXCLUDED_SECTIONS` |
+| Hide specific page from sidebar | `app/lib/navigation.ts` | `SIDEBAR_EXCLUDED_PAGES` |
+| Hide MCP sections | `app/lib/flag.ts` | `showMcpDocs` |
+| Site name, URL, OG image | `app/lib/siteConfig.ts` | `siteConfig` |
+| Add documentation pages | `content/docs/` | Create `.md` files |
+| Customize page group title/icon | `content/docs/*/.navigation.yml` | YAML frontmatter |

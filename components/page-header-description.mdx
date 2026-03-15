@@ -1,0 +1,60 @@
+---
+title: PageHeaderDescription
+description: A responsive paragraph for page hero subtitles with foreground color, text-balance wrapping, and a generous max width.
+---
+
+## Overview
+
+`PageHeaderDescription` renders a `<p>` element styled for use beneath a `PageHeaderHeading`. It applies responsive text sizes, foreground color, balanced wrapping, and a `max-w-3xl` constraint to keep long descriptions comfortable to read.
+
+**File:** `app/components/PageHeaderDescription.vue`
+
+## Props
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes merged onto the `<p>` element via `cn()`.
+</ParamField>
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | The description text |
+
+## Usage
+
+```vue
+<template>
+  <PageHeader>
+    <PageHeaderHeading>Welcome</PageHeaderHeading>
+    <PageHeaderDescription>
+      A simple, powerful framework for building documentation sites.
+    </PageHeaderDescription>
+  </PageHeader>
+</template>
+```
+
+### Custom class
+
+```vue
+<template>
+  <PageHeaderDescription class="text-muted-foreground">
+    Subdued description text.
+  </PageHeaderDescription>
+</template>
+```
+
+## Default styles
+
+| Property | Value |
+|----------|-------|
+| Element | `<p>` |
+| Font size | `text-base` (mobile) · `sm:text-lg` |
+| Color | `text-foreground` |
+| Text wrap | `text-balance` |
+| Max width | `max-w-3xl` |
+
+## Related components
+
+- [PageHeader](/components/page-header) — the parent container
+- [PageHeaderHeading](/components/page-header-heading) — the heading that precedes this description

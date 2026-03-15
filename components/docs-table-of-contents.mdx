@@ -1,0 +1,116 @@
+---
+title: DocsTableOfContents
+description: A table of contents component that auto-generates from page headings and highlights the currently visible section as the user scrolls.
+---
+
+The `DocsTableOfContents` component reads the `Toc` object produced by Nuxt Content and renders anchor links to every heading on the page. It tracks scroll position with an `IntersectionObserver` and applies an active style to whichever heading is currently in view.
+
+The component supports two display variants: a vertical `list` for the right-hand rail on desktop, and a compact `dropdown` suited for mobile toolbars.
+
+**File location:** `app/components/DocsTableOfContents.vue`
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import type { Toc } from '@nuxt/content'
+
+const toc: Toc = {
+  title: 'Page Title',
+  depth: 3,
+  searchDepth: 3,
+  links: [
+    {
+      id: 'overview',
+      depth: 2,
+      text: 'Overview',
+      children: [
+        { id: 'details', depth: 3, text: 'Details' },
+      ],
+    },
+  ],
+}
+</script>
+
+<template>
+  <DocsTableOfContents :toc="toc" />
+</template>
+```
+
+## Props
+
+<ParamField path="toc" type="Toc" required>
+  Table of contents data from Nuxt Content. Typically accessed via the `toc` property of a content page's data returned by `queryCollection`.
+</ParamField>
+
+<ParamField path="variant" type="'dropdown' | 'list'" default="'list'">
+  Controls the display mode. `'list'` renders a vertical inline list; `'dropdown'` renders an "On This Page" button that opens a scrollable dropdown menu.
+</ParamField>
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes applied to the root element. Useful for controlling width or positioning from the parent layout.
+</ParamField>
+
+## Variants
+
+### List (default)
+
+Renders a flat, scrollable list of heading links in the right-hand rail. Each link is indented according to its heading depth.
+
+```vue
+<template>
+  <DocsTableOfContents :toc="toc" variant="list" />
+</template>
+```
+
+### Dropdown
+
+Renders a compact "On This Page" button. Clicking the button opens a `DropdownMenu` with the same heading links. Useful in mobile toolbars where vertical space is limited.
+
+```vue
+<template>
+  <DocsTableOfContents :toc="toc" variant="dropdown" />
+</template>
+```
+
+## Active section highlighting
+
+The component uses VueUse's `useIntersectionObserver` to observe all heading elements identified in `toc.links`. When a heading enters the viewport, its corresponding TOC link is marked active via `data-active="true"` and receives the `text-foreground` color.
+
+The observer uses a `rootMargin` of `"0% 0% -80% 0%"`, which means a heading is considered active as soon as it enters the top 20% of the viewport. This prevents the active state from jumping ahead while reading.
+
+## Heading structure
+
+The component flattens the nested `Toc` structure: it renders each top-level heading and then immediately renders that heading's direct children inline, producing a single-level list with visual indentation:
+
+| Depth | Indentation class |
+|---|---|
+| `2` (h2) | none |
+| `3` (h3) | `pl-4` |
+| `4` (h4) | `pl-6` |
+
+<Tip>
+  The dropdown variant uses the same `data-depth` indentation attributes, so both variants apply identical depth-based padding inside the menu.
+</Tip>
+
+## Customization
+
+Pass a `class` prop to override the default padding and layout on the container:
+
+```vue
+<template>
+  <DocsTableOfContents
+    :toc="toc"
+    class="w-48 border-l pl-6"
+  />
+</template>
+```
+
+To adjust the active-detection threshold, modify the `rootMargin` value in `DocsTableOfContents.vue`:
+
+```typescript
+// app/components/DocsTableOfContents.vue
+const observers = useIntersectionObserver(elements, (entries) => { ... }, {
+  rootMargin: '0% 0% -80% 0%', // Adjust the bottom margin to change detection sensitivity
+})
+```

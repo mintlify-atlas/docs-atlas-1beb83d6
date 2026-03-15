@@ -1,0 +1,66 @@
+---
+title: "Introduction"
+description: "A production-ready documentation template built with Nuxt 4 and shadcn-vue — engineered for speed, clarity, and developer sanity."
+---
+
+Welcome to **shadcn-docs-template**, an open-source documentation starter built on top of [Nuxt 4](https://nuxt.com) and [shadcn-vue](https://www.shadcn-vue.com). It gives you a fully functional, beautifully styled docs site that you can clone, customize, and ship — without building the scaffolding yourself.
+
+The template is powered by [Nuxt Content 3](https://content.nuxt.com), [Tailwind CSS 4](https://tailwindcss.com), and the broader Vue ecosystem. Whether you are documenting a library, an internal tool, or a product, this is a solid, maintained foundation to build on.
+
+## Features
+
+<CardGroup cols={2}>
+  <Card title="Nuxt 4.4 & Nuxt Content 3" icon="layers">
+    Built on the latest Nuxt release with first-class content authoring via Nuxt Content 3, including MDC component support.
+  </Card>
+  <Card title="shadcn-vue components" icon="palette">
+    Beautifully designed, accessible UI components from shadcn-vue are available out of the box and ready to drop into any page.
+  </Card>
+  <Card title="Tailwind CSS 4" icon="paintbrush">
+    Modern utility-first styling with Tailwind CSS 4, including the `@tailwindcss/typography` plugin for rich prose rendering.
+  </Card>
+  <Card title="Dark mode" icon="moon">
+    Built-in light and dark theme switching via `@nuxtjs/color-mode`, with no extra configuration required.
+  </Card>
+  <Card title="MDC components" icon="code">
+    Rich Markdown support with custom components such as `Callout`, `ComponentPreview`, and more, powered by the MDC syntax.
+  </Card>
+  <Card title="Integrated search" icon="search">
+    Full-text search across all content pages, powered by the Nuxt Content search API.
+  </Card>
+  <Card title="OG image generation" icon="image">
+    Automatic Open Graph image generation for every page via `nuxt-og-image`.
+  </Card>
+  <Card title="Performance & SEO" icon="zap">
+    Optimized for fast page loads and good SEO out of the box, with Nuxt's built-in static generation support.
+  </Card>
+</CardGroup>
+
+## Tech stack
+
+The following core packages make up the template. Versions are pinned in `package.json`.
+
+| Package | Version | Purpose |
+|---|---|---|
+| [nuxt](https://nuxt.com) | `^4.4.2` | Full-stack Vue framework |
+| [vue](https://vuejs.org) | `^3.5.30` | Reactive UI layer |
+| [@nuxt/content](https://content.nuxt.com) | `^3.12.0` | File-based content with MDC |
+| [tailwindcss](https://tailwindcss.com) | `^4.2.1` | Utility-first CSS framework |
+| [shadcn-nuxt](https://www.shadcn-vue.com) | `2.4.3` | shadcn component integration for Nuxt |
+| [reka-ui](https://reka-ui.com) | `^2.9.1` | Headless UI primitives (used by shadcn-vue) |
+| [lucide-vue-next](https://lucide.dev) | `^0.563.0` | Icon library |
+| [@nuxtjs/color-mode](https://color-mode.nuxtjs.org) | `4.0.0` | Dark/light theme switching |
+| [nuxt-og-image](https://nuxtseo.com/og-image) | `5.1.13` | Automatic OG image generation |
+| [nuxt-shiki](https://github.com/nuxt-modules/shiki) | `0.3.2` | Syntax highlighting for code blocks |
+| [@vueuse/core](https://vueuse.org) | `^14.2.1` | Vue composable utilities |
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="terminal" href="/installation">
+    Clone the repository, install dependencies, and start your local development server in minutes.
+  </Card>
+  <Card title="Customization" icon="settings" href="/customization/overview">
+    Update `siteConfig.ts` and `navigation.ts` to match your project name, URL, and branding.
+  </Card>
+</CardGroup>

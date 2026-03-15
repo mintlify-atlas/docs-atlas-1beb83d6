@@ -1,0 +1,101 @@
+---
+title: CodeBlockCommand
+description: Displays a terminal command in tabs for npm, yarn, pnpm, and bun, with automatic command conversion and a copy button.
+---
+
+The `CodeBlockCommand` component accepts a single `npm`-style command, automatically converts it to the equivalent command for yarn, pnpm, and bun, then presents all four variants in a tabbed code block. The user's selected package manager is persisted via `useConfig()`.
+
+**File location:** `app/components/CodeBlockCommand.vue`
+
+## Usage
+
+### MDC syntax
+
+```markdown
+::code-block-command{code="npm install reka-ui"}
+::
+```
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import CodeBlockCommand from '@/components/CodeBlockCommand.vue'
+</script>
+
+<template>
+  <CodeBlockCommand code="npm install reka-ui" />
+</template>
+```
+
+## Automatic command conversion
+
+The component detects the command type and produces the correct variant for each package manager:
+
+| Input pattern | npm | yarn | pnpm | bun |
+|---|---|---|---|---|
+| `npm install <pkg>` | unchanged | `yarn add <pkg>` | `pnpm add <pkg>` | `bun add <pkg>` |
+| `npx create-<tmpl>` | unchanged | `yarn create <tmpl>` | `pnpm create <tmpl>` | `bunx --bun create-<tmpl>` |
+| `npm create <tmpl>` | unchanged | `yarn create <tmpl>` | `pnpm create <tmpl>` | `bun create <tmpl>` |
+| `npx <cmd>` | unchanged | `yarn dlx <cmd>` | `pnpm dlx <cmd>` | `bunx --bun <cmd>` |
+| `npm run <script>` | unchanged | `yarn <script>` | `pnpm <script>` | `bun <script>` |
+
+<Warning>
+  The component only converts commands that match one of the patterns above. If your command does not match, all tabs will be empty. Ensure you pass a valid npm-style command.
+</Warning>
+
+## Examples
+
+### Package install
+
+```markdown
+::code-block-command{code="npm install @radix-ui/vue-dialog"}
+::
+```
+
+### CLI scaffolding
+
+```markdown
+::code-block-command{code="npx shadcn-vue@latest add button"}
+::
+```
+
+### Create command
+
+```markdown
+::code-block-command{code="npm create vite@latest my-app -- --template vue-ts"}
+::
+```
+
+### Script run
+
+```markdown
+::code-block-command{code="npm run dev"}
+::
+```
+
+### Inside a DocTabs content panel
+
+```markdown
+::::doc-tabs{default-value="cli"}
+  :::doc-tabs-list
+    ::doc-tabs-trigger{value="cli"}
+    CLI
+    ::
+  :::
+
+  :::doc-tabs-content{value="cli"}
+  ::code-block-command{code="npx shadcn-vue@latest add button"}
+  :::
+::::
+```
+
+## Package manager persistence
+
+The active tab is bound to `config.packageManager` from `useConfig()`. When a user selects pnpm on one page, that preference is retained across all `CodeBlockCommand` instances on the site.
+
+## API reference
+
+<ParamField path="code" type="string" required>
+  The npm-style command string to display and convert. Must contain one of the supported patterns: `npm install`, `npx create-`, `npm create`, `npx`, or `npm run`.
+</ParamField>

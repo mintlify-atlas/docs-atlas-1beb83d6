@@ -1,0 +1,63 @@
+---
+title: SiteFooter
+description: A minimal site footer that displays copyright text and adapts its background to the page body style.
+---
+
+## Overview
+
+`SiteFooter` renders the bottom-of-page footer bar. In the default template it shows a centered copyright line. Its background adapts automatically when the parent `SiteBody` uses the `section-soft` layout variant.
+
+**File:** `app/components/SiteFooter.vue`
+
+## Props
+
+`SiteFooter` accepts no props.
+
+## Usage
+
+```vue
+<template>
+  <SiteFooter />
+</template>
+```
+
+In a full layout:
+
+```vue
+<template>
+  <SiteBody>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <SiteFooter />
+  </SiteBody>
+</template>
+```
+
+## Customization
+
+To change the footer content, edit `app/components/SiteFooter.vue` directly:
+
+```vue
+<template>
+  <footer>
+    <div class="container-wrapper px-4 xl:px-6">
+      <div class="flex h-(--footer-height) items-center justify-between">
+        <div class="w-full text-center text-xs/loose text-muted-foreground sm:text-sm">
+          <span>&copy; Your Company Name</span>
+          <!-- Add links, social icons, etc. -->
+        </div>
+      </div>
+    </div>
+  </footer>
+</template>
+```
+
+## Notes
+
+- Footer height is driven by the `--footer-height` CSS variable set in `SiteBody`:
+  - Mobile / default: `calc(var(--spacing) * 14)`
+  - `xl` screens and above: `calc(var(--spacing) * 24)`
+- The background class `group-has-[.section-soft]/body:bg-surface/40` means the footer will pick up a soft tinted background when a `.section-soft` element is present inside the `SiteBody` element.
+- At the `3xl` fixed-layout breakpoint the background is transparent to blend with the constrained content area.

@@ -1,0 +1,59 @@
+---
+title: SiteBody
+description: Root layout wrapper that establishes CSS variables for header and footer heights and applies global body styles.
+---
+
+## Overview
+
+`SiteBody` is the outermost layout container for every page. It defines the `--header-height` and `--footer-height` CSS variables that `SiteHeader`, `SiteFooter`, and any sticky/offset elements depend on. It also sets `overscroll-none` and `antialiased` on the root element.
+
+**File:** `app/components/SiteBody.vue`
+
+## Props
+
+`SiteBody` accepts no props.
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | All page content — header, main, footer |
+
+## Usage
+
+```vue
+<template>
+  <SiteBody>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <SiteFooter />
+  </SiteBody>
+</template>
+```
+
+## CSS variables
+
+`SiteBody` inlines the following custom properties on its root `<div>`:
+
+| Variable | Value | Breakpoint |
+|----------|-------|------------|
+| `--header-height` | `calc(var(--spacing) * 14)` | all |
+| `--footer-height` | `calc(var(--spacing) * 14)` | default (mobile) |
+| `--footer-height` | `calc(var(--spacing) * 24)` | `xl` and above |
+
+These variables are consumed by:
+
+- `SiteHeader` — `h-(--header-height)` to size the sticky bar
+- `SiteFooter` — `h-(--footer-height)` to size the footer bar
+- Sidebar and TOC sticky positioning offsets
+
+<Note>
+If you need a taller header or footer, override these variables in your own CSS rather than editing `SiteBody.vue`, so your changes are not lost on template updates.
+</Note>
+
+## Notes
+
+- `overscroll-none` prevents pull-to-refresh and bounce scrolling at the page edges.
+- `antialiased` enables subpixel anti-aliasing for crisper text on most displays.

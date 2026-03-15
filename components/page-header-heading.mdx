@@ -1,0 +1,66 @@
+---
+title: PageHeaderHeading
+description: A large, responsive h1 for page hero sections with semibold weight, primary color, and text-balance wrapping.
+---
+
+## Overview
+
+`PageHeaderHeading` renders an `<h1>` element styled for page hero areas. It applies large responsive font sizes, semibold weight, primary text color, balanced line wrapping, and a maximum width to keep long titles readable.
+
+Use it as the first child inside `PageHeader`.
+
+**File:** `app/components/PageHeaderHeading.vue`
+
+## Props
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes merged onto the `<h1>` element via `cn()`.
+</ParamField>
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | The heading text |
+
+## Usage
+
+```vue
+<template>
+  <PageHeader>
+    <PageHeaderHeading>Build docs faster</PageHeaderHeading>
+  </PageHeader>
+</template>
+```
+
+### Custom class
+
+```vue
+<template>
+  <PageHeaderHeading class="text-3xl">
+    A smaller heading
+  </PageHeaderHeading>
+</template>
+```
+
+## Default styles
+
+| Property | Value |
+|----------|-------|
+| Element | `<h1>` |
+| Font size | `text-4xl` (mobile) · `xl:text-5xl` |
+| Font weight | `font-semibold` |
+| Color | `text-primary` |
+| Tracking | `tracking-tight` · `xl:tracking-tighter` |
+| Line height | `lg:leading-[1.1]` |
+| Text wrap | `text-balance` |
+| Max width | `max-w-2xl` |
+
+<Note>
+`text-balance` distributes line breaks evenly across lines. It works best for headings up to roughly four lines long.
+</Note>
+
+## Related components
+
+- [PageHeader](/components/page-header) — the parent container
+- [PageHeaderDescription](/components/page-header-description) — the subtitle paragraph

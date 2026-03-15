@@ -1,0 +1,178 @@
+---
+title: "Installation"
+description: "How to clone, install, and run the shadcn-docs-template on your local machine."
+---
+
+Get up and running with `shadcn-docs-template` in a few steps.
+
+<Note>
+  [Bun](https://bun.sh/) is recommended as the package manager and runtime. The examples below show all common alternatives, but the project's scripts are authored with Bun in mind.
+</Note>
+
+<Steps>
+  <Step title="Prerequisites">
+    Make sure the following are installed before continuing.
+
+    | Requirement | Minimum version | Notes |
+    |---|---|---|
+    | [Node.js](https://nodejs.org) | 24 | Specified in `package.json` (`"node": 24`) |
+    | [Bun](https://bun.sh/) | latest | Recommended package manager and dev runtime |
+    | [Git](https://git-scm.com/) | any | Required to clone the repository |
+
+    To install Bun:
+
+    ```bash
+    curl -fsSL https://bun.sh/install | bash
+    ```
+
+    Verify your Node.js version:
+
+    ```bash
+    node --version
+    ```
+  </Step>
+
+  <Step title="Clone the repository">
+    Clone the template from GitHub into a local directory. The example below names the directory `docs`; change it to whatever suits your project.
+
+    ```bash
+    git clone https://github.com/hetari/shadcn-docs-template.git docs
+    cd docs
+    ```
+
+    <Tip>
+      If you want to start with a clean Git history (no upstream commits), delete the `.git` directory after cloning and run `git init` to create a fresh repository.
+    </Tip>
+  </Step>
+
+  <Step title="Install dependencies">
+    Install all project dependencies using your preferred package manager.
+
+    <CodeGroup>
+
+    ```bash bun
+    bun install
+    ```
+
+    ```bash npm
+    npm install
+    ```
+
+    ```bash yarn
+    yarn install
+    ```
+
+    ```bash pnpm
+    pnpm install
+    ```
+
+    </CodeGroup>
+
+    This also runs the `postinstall` script (`nuxt prepare`), which generates the Nuxt TypeScript types and content index.
+  </Step>
+
+  <Step title="Start the development server">
+    Start the local development server to preview the site.
+
+    <CodeGroup>
+
+    ```bash bun
+    bun dev
+    ```
+
+    ```bash npm
+    npm run dev
+    ```
+
+    ```bash yarn
+    yarn dev
+    ```
+
+    ```bash pnpm
+    pnpm dev
+    ```
+
+    </CodeGroup>
+
+    The server starts at [http://localhost:3000](http://localhost:3000). Open that URL in your browser to see the documentation site.
+
+    <Note>
+      Hot module replacement is enabled by default. Changes to MDX content files and Vue components are reflected immediately without a full page reload.
+    </Note>
+  </Step>
+
+  <Step title="Configure the site">
+    Open `app/lib/siteConfig.ts` and update the values to match your project.
+
+    ```typescript app/lib/siteConfig.ts
+    export type Links = {
+      github: string;
+      githubAPI: string;
+    };
+
+    export type SiteConfig = {
+      name: string;
+      url: string;
+      ogImage: string;
+      description: string;
+      links: Links;
+    };
+
+    const repoUrl = "https://github.com/hetari/shadcn-docs-template";
+
+    export const siteConfig: SiteConfig = {
+      name: "shadcn-docs-template",
+      url: repoUrl,
+      ogImage:
+        "https://raw.githubusercontent.com/hetari/shadcn-docs-template/master/public/og.png",
+      description:
+        "Simple, powerful and flexible site generation framework with everything you love from Nuxt.js & Shadcn Vue",
+      links: {
+        github: repoUrl,
+        githubAPI: "https://api.github.com/repos/hetari/shadcn-docs-template",
+      },
+    };
+    ```
+
+    The fields you will almost always want to change:
+
+    | Field | Description |
+    |---|---|
+    | `name` | Your project or product name. Appears in the site header and metadata. |
+    | `url` | The canonical URL of your deployed docs site. |
+    | `ogImage` | Absolute URL to the default Open Graph image used for social sharing. |
+    | `description` | Short description used in `<meta name="description">` and OG tags. |
+    | `links.github` | URL to your project's GitHub repository. |
+    | `links.githubAPI` | GitHub REST API URL for your repository, used to fetch star counts and other metadata. |
+
+    <Warning>
+      `links.githubAPI` must follow the format `https://api.github.com/repos/{owner}/{repo}`. Pointing it at the wrong repository will cause incorrect star/fork counts to appear in the header.
+    </Warning>
+  </Step>
+</Steps>
+
+## Keeping the template up to date
+
+To upgrade Nuxt and all dependencies to their latest versions:
+
+```bash
+bunx --bun nuxt@latest upgrade
+bun update
+```
+
+<Warning>
+  `bun update` updates **all** dependencies to their latest versions. If you need to pin specific package versions, update `package.json` manually instead of running this command.
+</Warning>
+
+## Next steps
+
+With the server running and `siteConfig.ts` updated, you are ready to start writing content and customizing the template.
+
+<CardGroup cols={2}>
+  <Card title="Introduction" icon="book-open" href="/introduction">
+    Learn what the template includes and how the tech stack fits together.
+  </Card>
+  <Card title="Customization" icon="settings" href="/customization/overview">
+    Customize navigation, branding, and site settings for your project.
+  </Card>
+</CardGroup>

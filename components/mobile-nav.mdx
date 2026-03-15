@@ -1,0 +1,86 @@
+---
+title: MobileNav
+description: Mobile navigation component with an animated hamburger trigger and a full-viewport popover that lists all main links, sections, and the content tree.
+---
+
+## Overview
+
+`MobileNav` provides the navigation experience on small screens. A hamburger button opens a full-height `PopoverContent` panel that contains three sections:
+
+1. **Menu** — Home plus all items from the `items` prop
+2. **Sections** — Section pills from `NAV_SECTIONS` (filtered by the `showMcpDocs` feature flag)
+3. **Content tree** — Groups and pages from the `tree` prop, with optional Lucide icons and "new" indicators
+
+In `SiteHeader` it is shown on mobile and hidden from `lg` upward (`flex lg:hidden`).
+
+**File:** `app/components/MobileNav.vue`
+
+## Props
+
+<ParamField path="tree" type="any[]" required>
+  Navigation tree fetched from `useNavigation()`. The component reads `tree[0].children` to render grouped page links. Typed as `any[]` to accommodate optional fields such as `navigation.icon` without TypeScript template errors.
+</ParamField>
+
+<ParamField path="items" type="{ name: string; href: string }[]" required>
+  Top-level navigation items shown in the Menu section. Matches the `NavItem` shape from `app/lib/navigation.ts`.
+</ParamField>
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes applied to the `PopoverTrigger` button.
+</ParamField>
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { MAIN_NAVIGATION } from '~/lib/navigation';
+
+const { data } = await useNavigation();
+</script>
+
+<template>
+  <MobileNav
+    :tree="data ?? []"
+    :items="MAIN_NAVIGATION"
+    class="flex lg:hidden"
+  />
+</template>
+```
+
+## Popover sections
+
+### Menu
+
+Always shows a **Home** link (`/`) followed by every item in the `items` prop.
+
+### Sections
+
+Rendered only when `NAV_SECTIONS` (from `app/lib/navigation.ts`) is non-empty. Each entry links to a top-level doc section. Items whose `href` contains `/mcp` are hidden when the `showMcpDocs` feature flag is `false`.
+
+```typescript
+// app/lib/navigation.ts
+export const NAV_SECTIONS: NavItem[] = [
+  { name: 'Get Started', href: '/docs/getting-started/introduction' },
+];
+```
+
+### Content tree
+
+Iterates over `tree[0].children` (the top-level content groups). For each group it renders:
+
+- A muted label with the group title
+- Links for every child page, with:
+  - A `LucideIcon` if `item.navigation.icon` is set
+  - A small green dot (`bg-green-500`) if `item.new` is `true`
+
+## Behavior
+
+- Tapping any link calls `router.push(path)` and then closes the popover (`open.value = false`).
+- The hamburger icon animates: the two bars rotate to form an **×** when the panel is open.
+- The panel uses a backdrop blur (`backdrop-blur-sm`) and near-opaque background (`bg-background/90`).
+
+## Notes
+
+- Link text uses `text-2xl font-medium` for generous touch targets.
+- The popover fills the available viewport height (`h-(--reka-popper-available-height)`) and is scrollable.
+- `showMcpDocs` is a feature flag in `app/lib/flag.ts` that controls visibility of MCP-related section links.

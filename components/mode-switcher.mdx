@@ -1,0 +1,71 @@
+---
+title: ModeSwitcher
+description: A button that cycles between light and dark color modes using the @nuxtjs/color-mode module.
+---
+
+The `ModeSwitcher` component renders a ghost icon button that toggles the site color mode between `light` and `dark`. It reads and writes the user's preference through the `useColorMode()` composable provided by `@nuxtjs/color-mode`.
+
+**File location:** `app/components/ModeSwitcher.vue`
+
+## Props
+
+This component accepts no props. Color mode state is managed entirely by the `@nuxtjs/color-mode` module.
+
+## Behavior
+
+- Clicking the button cycles through `light` → `dark` → `light`.
+- The selected preference is persisted (via `@nuxtjs/color-mode`'s default localStorage strategy).
+- A visually hidden `<span class="sr-only">` provides accessible label text for screen readers.
+- The button uses a custom half-circle SVG icon; it does not rely on `LucideIcon`.
+
+## Usage
+
+```vue
+<template>
+  <ModeSwitcher />
+</template>
+```
+
+The component is included in the site header by default alongside `GitHubLink` and the navigation controls.
+
+## Module requirement
+
+`ModeSwitcher` depends on `@nuxtjs/color-mode` being registered in `nuxt.config.ts`:
+
+```typescript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  modules: [
+    '@nuxtjs/color-mode',
+  ],
+})
+```
+
+<Warning>
+  If `@nuxtjs/color-mode` is not installed, `useColorMode()` will not be available and the component will throw a runtime error.
+</Warning>
+
+## Customization
+
+To change the icon, replace the inline `<svg>` block in `app/components/ModeSwitcher.vue` with any other icon element, such as a `LucideIcon`:
+
+```vue
+<template>
+  <Button
+    variant="ghost"
+    size="icon"
+    class="group/toggle extend-touch-target size-8"
+    title="Toggle theme"
+    @click="toggleTheme"
+  >
+    <LucideIcon name="sun-moon" class="size-4.5" />
+    <span class="sr-only">Toggle theme</span>
+  </Button>
+</template>
+```
+
+To add a third `system` mode, extend the `preferences` array in the `toggleTheme` function:
+
+```typescript
+const preferences = ['light', 'dark', 'system']
+```

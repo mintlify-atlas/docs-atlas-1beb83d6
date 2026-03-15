@@ -1,0 +1,125 @@
+---
+title: DocsSidebar
+description: A sticky navigation sidebar for documentation pages that auto-generates from your content directory structure with section pills and hierarchical page links.
+---
+
+The `DocsSidebar` component renders the left-hand navigation panel on documentation pages. It displays top-level section pills defined in `app/lib/navigation.ts`, then renders a hierarchical tree of page links derived from the `content/docs/` directory structure.
+
+The sidebar is only visible on large screens (`lg` breakpoint and above). On smaller viewports, navigation is handled by the mobile menu.
+
+**File location:** `app/components/DocsSidebar.vue`
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import type { ContentNavigationItem } from '@nuxt/content'
+
+const tree: ContentNavigationItem = {
+  title: 'Docs',
+  path: '/docs',
+  children: [
+    {
+      title: 'Getting Started',
+      path: '/docs/getting-started',
+      children: [
+        {
+          title: 'Introduction',
+          path: '/docs/getting-started/introduction',
+        },
+      ],
+    },
+  ],
+}
+</script>
+
+<template>
+  <DocsSidebar :tree="tree" />
+</template>
+```
+
+## Props
+
+<ParamField path="tree" type="ContentNavigationItem" required>
+  The full navigation tree for the docs section, typically produced by Nuxt Content's `queryCollectionNavigation` and transformed by `useNavigation`. The component iterates over `tree.children` to render each section group and its pages.
+</ParamField>
+
+### `ContentNavigationItem` shape
+
+| Property | Type | Description |
+|---|---|---|
+| `title` | `string` | Section or page title rendered in the sidebar |
+| `path` | `string` | Route path used for the link and active-state matching |
+| `children` | `ContentNavigationItem[]` | Child items (pages within a section) |
+| `navigation.icon` | `string` \| `undefined` | Optional Lucide icon name shown beside the page title |
+| `new` | `boolean` \| `undefined` | When `true`, renders a green dot badge labelled "New" |
+
+## Section pills
+
+The top of the sidebar renders a "Sections" group with pills for each entry in `NAV_SECTIONS` from `app/lib/navigation.ts`:
+
+```typescript
+// app/lib/navigation.ts
+export const NAV_SECTIONS: NavItem[] = [
+  { name: 'Get Started', href: '/docs/getting-started/introduction' },
+]
+```
+
+Add an object to this array to create a new section pill. The active pill is determined by checking whether the current route path starts with the section's `href`.
+
+## Filtering
+
+Two constants in `app/lib/navigation.ts` control what the sidebar omits.
+
+### Excluding whole sections
+
+Sections whose titles (lowercased) appear in `SIDEBAR_EXCLUDED_SECTIONS` are hidden entirely:
+
+```typescript
+// app/lib/navigation.ts
+export const SIDEBAR_EXCLUDED_SECTIONS: string[] = []
+```
+
+Add a lowercased group title to hide that group:
+
+```typescript
+export const SIDEBAR_EXCLUDED_SECTIONS: string[] = ['changelog']
+```
+
+### Excluding individual pages
+
+Pages whose path appears in `SIDEBAR_EXCLUDED_PAGES` are hidden from the page list:
+
+```typescript
+// app/lib/navigation.ts
+export const SIDEBAR_EXCLUDED_PAGES: string[] = ['/docs/introduction']
+```
+
+## Page icons
+
+Set a Lucide icon on any page by adding a `navigation.icon` field to that page's frontmatter:
+
+```yaml
+---
+title: My Page
+navigation:
+  icon: rocket
+---
+```
+
+The sidebar renders the icon via the `LucideIcon` component to the left of the page title.
+
+## "New" badge
+
+Mark a page as new by setting `new: true` in its frontmatter. A small green dot will appear next to the title in the sidebar:
+
+```yaml
+---
+title: My New Feature
+new: true
+---
+```
+
+<Note>
+  The sidebar is hidden on mobile (`lg:flex`). It sticks to the top of the viewport below the header (`sticky top-[calc(var(--header-height)+1px)]`) and scrolls independently of the main content area.
+</Note>

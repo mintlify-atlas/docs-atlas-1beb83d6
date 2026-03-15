@@ -1,0 +1,93 @@
+---
+title: OgImage
+description: A custom Open Graph image template used by nuxt-og-image to generate social sharing previews with title, description, and Geist typography.
+---
+
+The `OgImage/Custom` component is a Vue template rendered server-side by the `nuxt-og-image` module to produce Open Graph images for social media sharing. It displays a page `title` and `description` on a black background with decorative border lines and a Vue logo mark.
+
+**File location:** `app/components/OgImage/Custom.vue`
+
+## Props
+
+<ParamField path="title" type="string">
+  The page title rendered in large, bold text. Font size adapts based on length: `80px` for titles up to 20 characters, `64px` for longer titles.
+</ParamField>
+
+<ParamField path="description" type="string">
+  The page description rendered below the title in `stone-400` at `40px`.
+</ParamField>
+
+## Default dimensions
+
+Images are generated at **1200 × 630 px**, the standard Open Graph size, as configured in `nuxt.config.ts`:
+
+```typescript
+// nuxt.config.ts
+ogImage: {
+  fonts: ['Geist:400', 'Geist:500', 'Geist:600'],
+  defaults: {
+    width: 1200,
+    height: 630,
+  },
+},
+```
+
+## Font configuration
+
+The template uses the **Geist** font family at weights `400`, `500`, and `600`. These are loaded by the `nuxt-og-image` module at build/render time — separate from the runtime font loading handled by `@nuxt/fonts`.
+
+## Module setup
+
+`nuxt-og-image` must be listed in the `modules` array in `nuxt.config.ts`:
+
+```typescript
+export default defineNuxtConfig({
+  modules: [
+    'nuxt-og-image',
+  ],
+  ogImage: {
+    fonts: ['Geist:400', 'Geist:500', 'Geist:600'],
+    defaults: {
+      width: 1200,
+      height: 630,
+    },
+  },
+})
+```
+
+## Using the OG image in pages
+
+To attach an OG image to a page, call `defineOgImage` in the page's `<script setup>` and reference the custom component:
+
+```vue
+<script setup lang="ts">
+defineOgImage({
+  component: 'OgImage/Custom',
+  title: 'My Page Title',
+  description: 'A short description of this page.',
+})
+</script>
+```
+
+For content pages driven by `@nuxt/content`, `title` and `description` from the page frontmatter are forwarded automatically when you configure a default OG image component.
+
+## Customizing the template
+
+Edit `app/components/OgImage/Custom.vue` to change the visual design. The component renders with Satori (via `nuxt-og-image`), which supports a subset of CSS — primarily flexbox layout and basic box model properties.
+
+<Warning>
+  Satori does not support all CSS properties. Grid layout, CSS variables, and some advanced properties are not available inside OG image templates. Use inline styles and flexbox for layout.
+</Warning>
+
+The current template includes:
+
+- Black background with white text
+- Dashed vertical border lines at `left-16` and `right-16`
+- Solid horizontal border lines at `top-16` and `bottom-16`
+- Vue logo mark (`#41B883`) in the bottom-right corner
+- Title text with `fontWeight: 600` and responsive `fontSize`
+- Description text with `fontWeight: 400` and `text-stone-400` color
+
+<Tip>
+  To preview the OG image for a page during development, visit `/__og-image__/image` (provided by the `nuxt-og-image` module) or append `?__og-image` to any page URL.
+</Tip>

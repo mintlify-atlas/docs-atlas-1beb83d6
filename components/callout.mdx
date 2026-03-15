@@ -1,0 +1,167 @@
+---
+title: Callout
+description: Displays a styled alert box for important information, warnings, tips, and other contextual content.
+---
+
+The `Callout` component renders a styled alert box with an icon, optional title, and slotted content. Eight type variants are available, each with distinct colors and icons.
+
+**File location:** `app/components/content/Callout.vue`
+
+## Usage
+
+### MDC syntax
+
+Use the `::callout` directive in Markdown files:
+
+```markdown
+::callout{type="info"}
+This is an info callout.
+::
+```
+
+With an optional title:
+
+```markdown
+::callout{type="warning" title="Heads up"}
+This action cannot be undone.
+::
+```
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import Callout from '@/components/content/Callout.vue'
+</script>
+
+<template>
+  <Callout type="info" title="Important Notice">
+    This is an info callout with a title.
+  </Callout>
+</template>
+```
+
+## Examples
+
+### Default
+
+```markdown
+::callout
+A default callout using the slate color scheme.
+::
+```
+
+### Info
+
+```markdown
+::callout{type="info"}
+Useful context or background information.
+::
+```
+
+### Warning
+
+```markdown
+::callout{type="warning"}
+Something may not work as expected.
+::
+```
+
+### Error
+
+```markdown
+::callout{type="error"}
+An error occurred while processing your request.
+::
+```
+
+### Success
+
+```markdown
+::callout{type="success"}
+Your changes have been saved successfully.
+::
+```
+
+### Note
+
+```markdown
+::callout{type="note"}
+Additional context worth recording.
+::
+```
+
+### Tip
+
+```markdown
+::callout{type="tip"}
+A best practice or productivity shortcut.
+::
+```
+
+### Danger
+
+```markdown
+::callout{type="danger"}
+This will permanently delete all data.
+::
+```
+
+### With title
+
+```markdown
+::callout{type="info" title="Prerequisites"}
+You must have Node.js 18 or later installed.
+::
+```
+
+```vue
+<template>
+  <Callout type="info" title="Prerequisites">
+    You must have Node.js 18 or later installed.
+  </Callout>
+</template>
+```
+
+### Without icon
+
+Set `:icon="false"` to suppress the leading icon:
+
+```vue
+<template>
+  <Callout type="warning" :icon="false">
+    Icon is hidden on this callout.
+  </Callout>
+</template>
+```
+
+## Type variants
+
+| Type | Icon | Color |
+|------|------|-------|
+| `default` | `InfoIcon` | Slate |
+| `info` | `InfoIcon` | Blue |
+| `warning` | `AlertTriangleIcon` | Amber |
+| `error` | `AlertCircleIcon` | Red |
+| `success` | `CheckCircleIcon` | Emerald |
+| `note` | `NotebookPen` | Purple |
+| `tip` | `LightbulbIcon` | Emerald |
+| `danger` | `BugIcon` | Rose |
+
+## API reference
+
+<ParamField path="type" type="string" default="default">
+  Variant that controls color scheme and icon. One of `default`, `info`, `warning`, `error`, `success`, `note`, `tip`, `danger`.
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional heading displayed above the callout body.
+</ParamField>
+
+<ParamField path="icon" type="boolean" default="true">
+  Whether to render the type-specific icon on the left side.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the root `Alert` element.
+</ParamField>

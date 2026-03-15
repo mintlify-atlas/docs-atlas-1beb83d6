@@ -1,0 +1,101 @@
+---
+title: CopyButton
+description: An icon button that copies a string to the clipboard and provides visual confirmation via a tooltip and icon swap.
+---
+
+The `CopyButton` component renders a small icon-only button positioned absolutely within its container. Clicking it copies the supplied `value` string to the clipboard. The icon changes from `Copy` to `Check` on success, and the tooltip updates to confirm the action.
+
+**File location:** `app/components/CopyButton.vue`
+
+## Usage
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import CopyButton from '@/components/CopyButton.vue'
+</script>
+
+<template>
+  <div class="relative">
+    <pre>npm install reka-ui</pre>
+    <CopyButton value="npm install reka-ui" />
+  </div>
+</template>
+```
+
+<Note>
+  `CopyButton` uses `position: absolute` by default and places itself at `top-3 right-2` of its nearest positioned ancestor. Wrap the target content in a `relative`-positioned container.
+</Note>
+
+## Examples
+
+### Basic usage
+
+```vue
+<template>
+  <CopyButton value="Text to copy" />
+</template>
+```
+
+### Custom tooltip
+
+```vue
+<template>
+  <CopyButton
+    value="sk-abc123"
+    tooltip="Copy API key"
+  />
+</template>
+```
+
+### Button variants
+
+The component accepts all shadcn-vue button variants:
+
+```vue
+<template>
+  <CopyButton value="ghost variant" variant="ghost" />
+  <CopyButton value="default variant" variant="default" />
+  <CopyButton value="outline variant" variant="outline" />
+</template>
+```
+
+### Custom size and position
+
+Override default positioning with the `class` prop:
+
+```vue
+<template>
+  <CopyButton
+    value="custom position"
+    class="top-1 right-1 size-6"
+  />
+</template>
+```
+
+## Behavior
+
+- Renders a `Copy` icon by default.
+- On click, calls `useClipboard` from VueUse to write `value` to the clipboard.
+- Icon switches to `Check` while the `copied` state is active.
+- Tooltip text changes from `"Copy to Clipboard"` (or the custom `tooltip` prop) to `"Copied"`.
+- Wrapped in `TooltipProvider` — no additional provider setup needed.
+
+## API reference
+
+<ParamField path="value" type="string" default="">
+  The string to write to the clipboard when the button is clicked.
+</ParamField>
+
+<ParamField path="tooltip" type="string" default="Copy to Clipboard">
+  Text shown in the tooltip before copying. Changes to `"Copied"` automatically after a successful copy.
+</ParamField>
+
+<ParamField path="variant" type="string" default="ghost">
+  shadcn-vue button variant. Accepts any value from `ButtonVariants["variant"]` (e.g. `ghost`, `default`, `outline`, `secondary`, `destructive`).
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the button. Use to override the default absolute positioning.
+</ParamField>

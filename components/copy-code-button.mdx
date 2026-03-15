@@ -1,0 +1,67 @@
+---
+title: CopyCodeButton
+description: A responsive button that opens a drawer on mobile and a dialog on desktop to display and copy theme customization code.
+---
+
+The `CopyCodeButton` component provides a way to copy theme CSS code. It adapts to screen size: on small screens it opens a bottom drawer (`Drawer`), and on larger screens it opens a centered dialog (`Dialog`). The current theme is read from `useConfig()`.
+
+**File location:** `app/components/CopyCodeButton.vue`
+
+## Usage
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import CopyCodeButton from '@/components/CopyCodeButton.vue'
+</script>
+
+<template>
+  <CopyCodeButton />
+</template>
+```
+
+## Examples
+
+### Default button
+
+```vue
+<template>
+  <CopyCodeButton />
+</template>
+```
+
+### Custom size
+
+```vue
+<template>
+  <CopyCodeButton size="sm" />
+</template>
+```
+
+### Icon-only button
+
+```vue
+<template>
+  <CopyCodeButton size="icon-sm" />
+</template>
+```
+
+When `size="icon-sm"` is used, the "Copy Code" label is visually hidden (`sr-only`) and only the `CopyIcon` is shown.
+
+## Behavior
+
+- **Mobile (`sm` and below):** Renders a `Button` that triggers a `Drawer` opening from the bottom.
+- **Desktop (`sm` and above):** Renders a `Button` that triggers a `Dialog` modal.
+- The dialog/drawer title and code content are driven by `config.activeTheme` from `useConfig()`.
+- `inheritAttrs` is disabled so that extra attributes are forwarded directly to the trigger buttons.
+
+## API reference
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to both the mobile and desktop trigger buttons.
+</ParamField>
+
+<ParamField path="size" type="string">
+  Button size variant from `ButtonVariants["size"]`. When set to `icon-sm`, the text label is hidden and only the icon is visible on desktop.
+</ParamField>

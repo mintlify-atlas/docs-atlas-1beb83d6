@@ -1,0 +1,57 @@
+---
+title: GitHubLink
+description: A button that links to the configured GitHub repository and displays a live star count fetched from the GitHub API.
+---
+
+The `GitHubLink` component renders a ghost button containing the GitHub icon and the repository's current star count. The star count is fetched client-side from the GitHub REST API using the URL configured in `siteConfig`. A skeleton placeholder is shown while the request is in flight.
+
+**File location:** `app/components/GitHubLink.vue`
+
+## Props
+
+This component accepts no props. All configuration is read from `siteConfig` in `app/lib/siteConfig.ts`.
+
+## Configuration
+
+Update `app/lib/siteConfig.ts` to point the component at your repository:
+
+```typescript
+// app/lib/siteConfig.ts
+export const siteConfig = {
+  links: {
+    // The URL the button links to
+    github: 'https://github.com/your-username/your-repo',
+    // The GitHub REST API endpoint used to fetch the star count
+    githubAPI: 'https://api.github.com/repos/your-username/your-repo',
+  },
+}
+```
+
+<Note>
+  The default configuration points to `https://github.com/hetari/shadcn-docs-template`. Change both `github` and `githubAPI` to your own repository when forking the template.
+</Note>
+
+## Usage
+
+```vue
+<template>
+  <GitHubLink />
+</template>
+```
+
+The component is included in the site header by default.
+
+## Behavior
+
+- Fetched client-side only (`server: false`) — the star count is not included in SSR output.
+- While the request is pending, a `Skeleton` placeholder (`h-4 w-8`) is rendered in place of the count.
+- Star counts of 1,000 or more are formatted as `1.2k`, `3.5k`, etc.
+- If the API request fails, the count displays as `—` and the error is logged to the console.
+- The button opens the repository in a new tab (`target="_blank"`) with `rel="noreferrer"`.
+- The link uses `prefetch-on="interaction"` for efficient prefetching.
+
+## GitHub API rate limits
+
+<Warning>
+  The unauthenticated GitHub API allows 60 requests per hour per IP address. For public documentation sites with high traffic, the star count may fail to load for some visitors. To increase the limit, configure a GitHub personal access token on the server side.
+</Warning>

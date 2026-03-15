@@ -1,0 +1,115 @@
+---
+title: CommandMenuKbd
+description: A styled keyboard key badge used in the command menu footer to display keyboard shortcut hints.
+---
+
+`CommandMenuKbd` renders a single `<kbd>` element styled to look like a physical keyboard key. It is used in the `CommandMenu` footer bar to display shortcut hints such as `⌘ K`, `Ctrl C`, and `↵`.
+
+The component has no props. All content is provided via the default slot, which accepts plain text, Unicode symbols, or SVG icon components.
+
+**File location:** `app/components/CommandMenuKbd.vue`
+
+## Usage
+
+### Text key
+
+```vue
+<template>
+  <CommandMenuKbd>⌘</CommandMenuKbd>
+  <CommandMenuKbd>K</CommandMenuKbd>
+</template>
+```
+
+### With a Lucide icon
+
+```vue
+<script setup lang="ts">
+import { CornerDownLeft } from 'lucide-vue-next'
+</script>
+
+<template>
+  <CommandMenuKbd>
+    <CornerDownLeft />
+  </CommandMenuKbd>
+</template>
+```
+
+### Platform-aware shortcut
+
+The `CommandMenu` component uses `useIsMac()` to render the correct modifier key:
+
+```vue
+<script setup lang="ts">
+const isMac = useIsMac()
+</script>
+
+<template>
+  <CommandMenuKbd>{{ isMac ? '⌘' : 'Ctrl' }}</CommandMenuKbd>
+  <CommandMenuKbd>K</CommandMenuKbd>
+</template>
+```
+
+## Props
+
+This component has no props. Content is passed entirely through the default slot.
+
+## Slot
+
+| Slot | Description |
+|---|---|
+| `default` | The key label. Accepts text, Unicode characters, or SVG elements. SVGs without an explicit `size-*` class are automatically constrained to `size-3`. |
+
+## Styling
+
+The component applies the following fixed styles to the `<kbd>` element:
+
+| Property | Value |
+|---|---|
+| Height | `h-5` (1.25rem) |
+| Padding | `px-1` |
+| Border | `border` with `bg-background` fill |
+| Corner radius | `rounded-sm` |
+| Font | Sans-serif, `text-[0.7rem]`, `font-medium` |
+| Color | `text-muted-foreground` |
+| Icon size | SVGs clamped to `size-3` unless they carry a `size-*` class |
+| Interaction | `pointer-events-none`, `select-none` |
+
+<Note>
+  `CommandMenuKbd` is intentionally non-interactive (`pointer-events-none`). It is a purely visual indicator. Pair it with a label in the parent container to convey what the shortcut does.
+</Note>
+
+## Example: full footer row
+
+This is how `CommandMenu.vue` uses `CommandMenuKbd` in its footer bar:
+
+```vue
+<script setup lang="ts">
+import { CornerDownLeft } from 'lucide-vue-next'
+const isMac = useIsMac()
+const selectedType = ref<'page' | 'copy' | null>(null)
+const copyPayload = ref('')
+</script>
+
+<template>
+  <div class="flex h-10 items-center gap-2 px-4 text-xs">
+    <!-- Enter key hint -->
+    <div class="flex items-center gap-2">
+      <CommandMenuKbd>
+        <CornerDownLeft />
+      </CommandMenuKbd>
+      <span v-if="selectedType === 'page'">Go to Page</span>
+      <span v-if="selectedType === 'copy'">Click to Copy</span>
+    </div>
+
+    <!-- Copy shortcut hint -->
+    <template v-if="copyPayload">
+      <Separator orientation="vertical" class="h-4" />
+      <div class="flex items-center gap-1">
+        <CommandMenuKbd>{{ isMac ? '⌘' : 'Ctrl' }}</CommandMenuKbd>
+        <CommandMenuKbd>C</CommandMenuKbd>
+        {{ copyPayload }}
+      </div>
+    </template>
+  </div>
+</template>
+```

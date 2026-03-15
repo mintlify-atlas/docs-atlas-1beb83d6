@@ -1,0 +1,60 @@
+---
+title: SiteConfig
+description: A toggle button that switches the content layout between fixed-width and full-width modes.
+---
+
+## Overview
+
+`SiteConfig` renders a ghost icon button (using `GalleryHorizontalIcon`) that toggles the site layout between `fixed` and `full` modes. The selected mode is persisted via the `useConfig()` composable and applied as a class on the document root, enabling CSS-driven layout switching without a page reload.
+
+**File:** `app/components/SiteConfig.vue`
+
+## Props
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes applied to the toggle button. Useful for controlling visibility at specific breakpoints.
+</ParamField>
+
+## Usage
+
+```vue
+<template>
+  <!-- Shown only at 3xl breakpoint (matches SiteHeader default) -->
+  <SiteConfig class="hidden 3xl:flex" />
+
+  <!-- Always visible -->
+  <SiteConfig />
+</template>
+```
+
+## Behavior
+
+Each click cycles the layout:
+
+```
+fixed → full → fixed → …
+```
+
+The layout value is read and written through the `useConfig()` composable:
+
+```typescript
+const { config } = useConfig();
+// config.value.layout is either 'fixed' or 'full'
+```
+
+## Layout modes
+
+| Value | Effect |
+|-------|--------|
+| `fixed` | Content is constrained to a max-width container (default) |
+| `full` | Content stretches to the full viewport width |
+
+<Tip>
+The `3xl:fixed:` responsive variant used throughout the template activates fixed-layout styles only when both the `3xl` breakpoint is active **and** the layout is set to `fixed`.
+</Tip>
+
+## Notes
+
+- `SiteHeader` renders `SiteConfig` with `class="hidden 3xl:flex"`, so the toggle is only visible at very wide viewports by default. You can place your own instance anywhere with any visibility class.
+- The button uses `size="icon"` and `variant="ghost"` from the shadcn-vue `Button` component.
+- An `sr-only` span with text "Toggle layout" is included for screen-reader accessibility.

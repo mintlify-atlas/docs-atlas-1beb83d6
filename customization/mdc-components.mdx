@@ -1,0 +1,343 @@
+---
+title: MDC Components
+description: Interactive Markdown Components (MDC) available in the shadcn-docs-template for building rich documentation pages.
+---
+
+This template ships with custom Markdown Components (MDC) that let you embed interactive UI previews, tabbed code blocks, callouts, and keyboard shortcuts directly in `.md` files using a concise syntax.
+
+---
+
+## Callout
+
+**File:** `app/components/content/Callout.vue`
+
+Displays a styled alert block with an icon. Eight type variants are available.
+
+### Props
+
+<ParamField path="type" type="string" default="default">
+  Visual style of the callout. One of `default`, `info`, `warning`, `error`, `success`, `note`, `tip`, `danger`.
+</ParamField>
+
+<ParamField path="title" type="string">
+  Optional heading text rendered above the callout body.
+</ParamField>
+
+<ParamField path="icon" type="boolean" default="true">
+  Whether to show the leading icon.
+</ParamField>
+
+### Type Variants
+
+| Type | Icon | Color |
+| --- | --- | --- |
+| `default` | `InfoIcon` | Slate |
+| `info` | `InfoIcon` | Blue |
+| `warning` | `AlertTriangleIcon` | Amber |
+| `error` | `AlertCircleIcon` | Red |
+| `success` | `CheckCircleIcon` | Emerald |
+| `note` | `NotebookPen` | Purple |
+| `tip` | `LightbulbIcon` | Emerald |
+| `danger` | `BugIcon` | Rose |
+
+### Usage
+
+```markdown
+::callout{type="info"}
+This is an informational callout.
+::
+
+::callout{type="warning"}
+This action cannot be undone.
+::
+
+::callout{type="tip"}
+The component-preview looks for files in `components/demo/` first.
+::
+
+::callout{type="danger"}
+Do not commit secrets to the repository.
+::
+```
+
+---
+
+## ComponentPreview
+
+**File:** `app/components/content/ComponentPreview.vue`
+
+Renders a working interactive component alongside its source code in a tabbed interface. This is the primary MDC for showcasing UI components.
+
+### Props
+
+<ParamField path="name" type="string" required>
+  Name of the component to render (e.g., `ButtonDemo`). The component is resolved in this order:
+  1. `components/demo/{name}.vue`
+  2. `components/demo/{name}/index.vue`
+  3. `components/ui/{name (lowercased)}/{name}.vue`
+  4. `components/ui/{name}.vue`
+</ParamField>
+
+<ParamField path="align" type="center | start | end" default="center">
+  Alignment of the rendered component inside the preview box.
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional description displayed below the component name.
+</ParamField>
+
+<ParamField path="hideCode" type="boolean" default="false">
+  When `true`, hides the "Code" tab entirely — only the interactive preview is shown.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Custom CSS classes applied to the root wrapper element.
+</ParamField>
+
+### Component Resolution Order
+
+```
+components/demo/ButtonDemo.vue          ← checked first
+components/demo/ButtonDemo/index.vue    ← checked second
+components/ui/buttondemo/ButtonDemo.vue ← checked third
+components/ui/ButtonDemo.vue            ← checked last
+```
+
+If none of these paths match, the template renders a "Component not found" message in the preview box.
+
+### Usage
+
+<Tabs>
+  <Tab title="Block syntax">
+    ```markdown
+    ::component-preview
+    ---
+    name: ButtonDemo
+    description: A basic button example
+    align: center
+    ---
+    ::
+    ```
+  </Tab>
+  <Tab title="Inline syntax">
+    ```markdown
+    ::component-preview{name="ButtonDemo" align="end"}
+    ```
+  </Tab>
+  <Tab title="Hide code">
+    ```markdown
+    ::component-preview{name="ButtonDemo" hideCode}
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+Organize demo components separately from your main UI components by placing them in `components/demo/`. The fallback to `components/ui/` means you can also preview production components directly without creating a wrapper.
+</Tip>
+
+---
+
+## ComponentSource
+
+**File:** `app/components/content/ComponentSource.vue`
+
+Displays only the source code of a component without an interactive preview. Useful when you want to show a raw implementation without rendering it.
+
+### Props
+
+<ParamField path="name" type="string">
+  Component name to look up. Resolves from `components/demo/` then `components/ui/`.
+</ParamField>
+
+<ParamField path="title" type="string">
+  Title shown in the code block header (e.g., a file path).
+</ParamField>
+
+<ParamField path="language" type="string" default="vue">
+  Language used for syntax highlighting.
+</ParamField>
+
+<ParamField path="collapsible" type="boolean" default="true">
+  Whether to wrap the code block in a collapsible container.
+</ParamField>
+
+### Usage
+
+```markdown
+::component-source
+---
+name: Input
+title: components/ui/input/Input.vue
+---
+::
+```
+
+---
+
+## Steps and Step
+
+**Files:** `app/components/content/Steps.vue`, `app/components/content/Step.vue`
+
+Renders a numbered step list with a vertical left-border guide. Use `::steps` as the container and `::step` for each individual step heading.
+
+### Steps Props
+
+<ParamField path="level" type="1 | 2 | 3 | 4 | 5 | 6" default="3">
+  The heading level that gets the step counter applied. Defaults to `h3`.
+</ParamField>
+
+### Usage
+
+```markdown
+::steps
+### Install dependencies
+
+Run the install command.
+
+### Configure the project
+
+Edit `siteConfig.ts` with your project details.
+
+### Start the dev server
+
+Run `npm run dev` and open your browser.
+::
+```
+
+Each `###` heading inside `::steps` automatically receives an incremented counter rendered in a circle on the left.
+
+---
+
+## DocTabs
+
+**Files:**
+- `app/components/content/DocTabs.vue`
+- `app/components/content/DocTabsList.vue`
+- `app/components/content/DocTabsTrigger.vue`
+- `app/components/content/DocTabsContent.vue`
+
+A tabbed content container styled for documentation. Uses shadcn-vue `Tabs` under the hood with an underline trigger style.
+
+### DocTabs Props
+
+<ParamField path="defaultValue" type="string">
+  The tab `value` that is selected by default.
+</ParamField>
+
+<ParamField path="modelValue" type="string">
+  Controlled value for the active tab.
+</ParamField>
+
+### DocTabsTrigger Props
+
+<ParamField path="value" type="string" required>
+  Unique identifier for the tab panel this trigger controls.
+</ParamField>
+
+### DocTabsContent Props
+
+<ParamField path="value" type="string" required>
+  Must match the corresponding `DocTabsTrigger` value.
+</ParamField>
+
+### Usage
+
+```markdown
+::::doc-tabs{defaultValue="pnpm"}
+:::doc-tabs-list
+::doc-tabs-trigger{value="pnpm"}
+pnpm
+::
+::doc-tabs-trigger{value="npm"}
+npm
+::
+::doc-tabs-trigger{value="yarn"}
+yarn
+::
+::doc-tabs-trigger{value="bun"}
+bun
+::
+:::
+
+:::doc-tabs-content{value="pnpm"}
+```bash
+pnpm add @radix-vue/vue
+```
+:::
+:::doc-tabs-content{value="npm"}
+```bash
+npm install @radix-vue/vue
+```
+:::
+:::doc-tabs-content{value="yarn"}
+```bash
+yarn add @radix-vue/vue
+```
+:::
+:::doc-tabs-content{value="bun"}
+```bash
+bun add @radix-vue/vue
+```
+:::
+::::
+```
+
+<Note>
+The nesting depth of colons must match the nesting level of MDC blocks. The outermost `doc-tabs` uses four colons (`::::`), `doc-tabs-list` and `doc-tabs-content` use three (`:::`), and `doc-tabs-trigger` uses two (`::`).
+</Note>
+
+---
+
+## CodeBlockCommand
+
+**File:** `app/components/CodeBlockCommand.vue`
+
+Renders a tabbed terminal block that automatically rewrites a single `npm`-style command into equivalent `pnpm`, `yarn`, and `bun` forms. The active tab is synced to the user's global package manager preference (stored in a cookie via `useConfig`).
+
+### Props
+
+<ParamField path="code" type="string" required>
+  The npm-style command to display. The component detects the command pattern and generates the correct equivalents.
+</ParamField>
+
+### Supported Command Patterns
+
+| Pattern in `code` | Transformations |
+| --- | --- |
+| `npm install` | `pnpm add`, `yarn add`, `bun add` |
+| `npx create-` | `pnpm create`, `yarn create`, `bunx --bun create-` |
+| `npm create` | `pnpm create`, `yarn create`, `bun create` |
+| `npx` | `pnpm dlx`, `yarn dlx`, `bunx --bun` |
+| `npm run` | `pnpm`, `yarn`, `bun` |
+
+### Usage
+
+```markdown
+::code-block-command{code="npm install shadcn-vue"}
+```
+
+```markdown
+::code-block-command{code="npx shadcn-vue@latest init"}
+```
+
+---
+
+## ContentKbd
+
+**File:** `app/components/content/ContentKbd.vue`
+
+Inline component for rendering keyboard shortcut keys with a styled `<kbd>` element.
+
+### Usage
+
+Use the inline MDC syntax with square brackets containing the key text:
+
+```markdown
+Press :ContentKbd[⌘ K] to open the command menu.
+
+Press :ContentKbd[Ctrl K] on Windows and Linux.
+
+Use :ContentKbd[⇧ ⌘ P] to open the command palette.
+```
+
+The component wraps its content in the `Kbd` UI primitive, which applies monospace font, border, and background styling consistent with the design system.

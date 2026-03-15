@@ -1,0 +1,95 @@
+---
+title: SiteHeader
+description: The main site header with logo, navigation, search, and utility controls. Renders sticky at the top of every page.
+---
+
+## Overview
+
+`SiteHeader` is the top-level layout component that renders the site-wide sticky header. It composes several child components — logo, desktop navigation, mobile navigation, command menu, GitHub link, layout toggle, and theme switcher — into a single cohesive bar.
+
+It is zero-prop: all data is sourced internally from `useNavigation()`, `siteConfig`, and `MAIN_NAVIGATION`.
+
+**File:** `app/components/SiteHeader.vue`
+
+## Props
+
+`SiteHeader` accepts no props.
+
+<Note>
+Configuration comes from `app/lib/siteConfig.ts` (branding) and `app/lib/navigation.ts` (nav items). Edit those files to change what the header displays.
+</Note>
+
+## Usage
+
+```vue
+<template>
+  <SiteHeader />
+</template>
+```
+
+In a full layout:
+
+```vue
+<template>
+  <SiteBody>
+    <SiteHeader />
+    <main>
+      <slot />
+    </main>
+    <SiteFooter />
+  </SiteBody>
+</template>
+```
+
+## Structure
+
+The header is composed of the following child components:
+
+| Region | Component | Visibility |
+|--------|-----------|------------|
+| Left — mobile | `MobileNav` | `flex lg:hidden` |
+| Left — desktop | Logo (`NuxtLink`) | `hidden lg:flex` |
+| Left — desktop | `MainNav` | `hidden lg:flex` |
+| Right | `CommandMenu` | `hidden md:flex` |
+| Right | `GitHubLink` | always |
+| Right | `SiteConfig` | `hidden 3xl:flex` |
+| Right | `ModeSwitcher` | always |
+
+## Configuration
+
+### Site name and logo
+
+Edit `app/lib/siteConfig.ts` to change the site name shown in the `sr-only` span beside the logo:
+
+```typescript
+export const siteConfig: SiteConfig = {
+  name: 'My Docs Site',
+  url: 'https://github.com/your-repo',
+  ogImage: 'https://example.com/og.png',
+  description: 'My documentation site',
+  links: {
+    github: 'https://github.com/your-repo',
+    githubAPI: 'https://api.github.com/repos/your-repo',
+  },
+};
+```
+
+Replace `public/logo.svg` to change the logo image.
+
+### Navigation items
+
+Edit `app/lib/navigation.ts` to change the header nav links:
+
+```typescript
+export const MAIN_NAVIGATION: NavItem[] = [
+  { href: '/docs/getting-started/introduction', name: 'Docs' },
+  { href: '/blog', name: 'Blog' },
+];
+```
+
+## Notes
+
+- The header uses `sticky top-0 z-50` and `bg-background` to stay visible while scrolling.
+- Height is controlled by the `--header-height` CSS variable defined in `SiteBody`.
+- The `SiteConfig` layout toggle is only shown at the `3xl` breakpoint by default.
+- The `CommandMenu` receives both the doc navigation tree and `MAIN_NAVIGATION` for cross-section search.

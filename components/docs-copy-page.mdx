@@ -1,0 +1,89 @@
+---
+title: DocsCopyPage
+description: A toolbar button that copies the current page's raw Markdown content and provides shortcuts to open it in ChatGPT, Claude, or as a Markdown file.
+---
+
+The `DocsCopyPage` component renders a split button in the documentation toolbar. The primary button copies the page's raw body text to the clipboard. A dropdown (desktop) or popover (mobile) exposes three additional actions: view the page as Markdown, open in ChatGPT, and open in Claude.
+
+**File location:** `app/components/DocsCopyPage.vue`
+
+## Usage
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import DocsCopyPage from '@/components/DocsCopyPage.vue'
+import type { ContentCollectionItem } from '@nuxt/content'
+
+const page = inject('page') as ContentCollectionItem
+</script>
+
+<template>
+  <DocsCopyPage :page="page" />
+</template>
+```
+
+<Note>
+  This component is designed to be placed in the documentation page header or toolbar. It reads `window.location.href` at render time to build external links, so it requires a browser environment.
+</Note>
+
+## Features
+
+### Copy page
+
+Clicking the primary "Copy Page" button writes `page.rawbody` to the clipboard using VueUse's `useClipboard`. The button icon swaps from `Copy` to `Check` on success.
+
+### External tool shortcuts
+
+The dropdown / popover provides three menu items:
+
+| Action | Destination |
+|---|---|
+| View as Markdown | `{origin}/raw{route.path}.md` |
+| Open in ChatGPT | `https://chatgpt.com?q={encoded-prompt}` |
+| Open in Claude | `https://claude.ai/new?q={encoded-prompt}` |
+
+For AI tools, the prompt is pre-filled with the current page URL and a context message to help the AI understand the documentation.
+
+### Responsive layout
+
+- **Desktop (`sm` and above):** Uses a `DropdownMenu` for the secondary actions.
+- **Mobile (below `sm`):** Uses a `Popover` for the secondary actions.
+
+## Examples
+
+### Minimal integration
+
+```vue
+<template>
+  <header>
+    <DocsCopyPage :page="page" />
+  </header>
+</template>
+```
+
+### In a page layout
+
+```vue
+<script setup lang="ts">
+import type { ContentCollectionItem } from '@nuxt/content'
+
+const { data: page } = await useAsyncData(() =>
+  queryCollection('docs').path(useRoute().path).first()
+)
+</script>
+
+<template>
+  <div class="flex items-center justify-between">
+    <h1>{{ page.title }}</h1>
+    <DocsCopyPage :page="page" />
+  </div>
+</template>
+```
+
+## API reference
+
+<ParamField path="page" type="ContentCollectionItem" required>
+  The Nuxt Content collection item for the current page. The component reads `page.rawbody` for the copy action and uses `useRoute().path` to construct the Markdown and AI tool URLs.
+</ParamField>

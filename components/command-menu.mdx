@@ -1,0 +1,157 @@
+---
+title: CommandMenu
+description: A command palette that opens on ⌘K / Ctrl+K and lets users search documentation, navigate pages, and copy component install commands.
+---
+
+The `CommandMenu` component provides a modal command palette similar to VS Code's command palette. It wraps the shadcn-vue `Command` and `Dialog` primitives and is wired into the site header via `SiteHeader.vue`, which passes the navigation tree, main nav items, and available blocks as props.
+
+**File location:** `app/components/CommandMenu.vue`
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `⌘ K` / `Ctrl K` | Open or close the command menu |
+| `/` | Alternative shortcut to open the command menu |
+| `⌘ C` / `Ctrl C` | Copy the install command for the highlighted item (when available) |
+| `Enter` | Navigate to or execute the highlighted item |
+| `Esc` | Close the command menu |
+
+<Note>
+  The keyboard listener is attached in `onMounted` and removed in `onUnmounted`. It does not fire when focus is inside an `<input>`, `<textarea>`, `<select>`, or a `contenteditable` element.
+</Note>
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import type { NavigationItem } from '~/composables/useNavigation'
+
+const tree = {
+  title: 'Docs',
+  path: '/docs',
+  children: [
+    {
+      title: 'Getting Started',
+      type: 'group' as const,
+      path: '/docs/getting-started',
+      children: [
+        {
+          title: 'Introduction',
+          path: '/docs/getting-started/introduction',
+          type: 'page' as const,
+        },
+      ],
+    },
+  ],
+}
+
+const navItems = [
+  { href: '/docs', name: 'Docs' },
+  { href: '/blocks', name: 'Blocks' },
+]
+</script>
+
+<template>
+  <CommandMenu :tree="tree" :nav-items="navItems" />
+</template>
+```
+
+## Props
+
+<ParamField path="tree" type="{ children: NavigationItem[]; title: string; path: string; stem?: string }">
+  The full documentation navigation tree, produced by `useNavigation`. The command menu iterates over `tree.children` to build per-section command groups. Items with `type === 'group'` are rendered as group headings; their children with `type === 'page'` or `type === 'component'` become selectable items.
+</ParamField>
+
+<ParamField path="navItems" type="{ href: string; name: string }[]">
+  Top-level site navigation links shown in a "Pages" group when the search query is empty. Typically sourced from `MAIN_NAVIGATION` in `app/lib/navigation.ts`.
+</ParamField>
+
+<ParamField path="blocks" type="{ name: string; description: string; categories: string[] }[]">
+  Block registry entries shown in a "Blocks" group when the search query is empty. Selecting a block navigates to `/blocks/{category}#{name}`. When a block is highlighted, the footer shows a `⌘C` / `Ctrl C` copy hint for its shadcn-vue install command.
+</ParamField>
+
+## Content groups
+
+The command menu renders the following groups in order:
+
+| Group | Visible when |
+|---|---|
+| **Search Results** | A search query of 2+ characters returns matches |
+| **Pages** | `navItems` is non-empty and query is shorter than 2 characters |
+| **Documentation sections** | Always (one group per entry in `tree.children`) |
+| **Actions** | Query is shorter than 2 characters |
+| **Blocks** | `blocks` is non-empty and query is shorter than 2 characters |
+
+## Search
+
+Search is powered by the `useSearch` composable (`app/composables/useSearch.ts`). Queries are debounced and run against a server endpoint that performs full-text search across all content files. Matches are capped at 20 results and cached for 24 hours with deterministic invalidation via `/api/docs-version`.
+
+## Copy behavior
+
+When a component page item or block is highlighted, the footer bar displays a copy shortcut. The payload is the corresponding `shadcn-vue` CLI command:
+
+```
+npx shadcn-vue@latest add <component-name>
+```
+
+The package manager prefix (`npx`, `yarn dlx`, `pnpm dlx`, `bunx`) is resolved from `config.packageManager`, which defaults to `pnpm`.
+
+## Adding custom navigation groups
+
+Pass additional groups through the `tree` prop by adding children with `type: 'group'`:
+
+```typescript
+const tree = {
+  title: 'Docs',
+  path: '/docs',
+  children: [
+    {
+      title: 'API Reference',
+      type: 'group',
+      path: '/docs/api',
+      children: [
+        { title: 'Authentication', path: '/docs/api/auth', type: 'page' },
+        { title: 'Endpoints', path: '/docs/api/endpoints', type: 'page' },
+      ],
+    },
+  ],
+}
+```
+
+## Adding blocks
+
+```vue
+<script setup lang="ts">
+const blocks = [
+  {
+    name: 'hero-01',
+    description: 'Full-width hero with CTA',
+    categories: ['marketing'],
+  },
+  {
+    name: 'pricing-01',
+    description: 'Three-column pricing table',
+    categories: ['marketing'],
+  },
+]
+</script>
+
+<template>
+  <CommandMenu :tree="tree" :nav-items="navItems" :blocks="blocks" />
+</template>
+```
+
+## `NavigationItem` type
+
+| Property | Type | Description |
+|---|---|---|
+| `title` | `string` | Display label in the command list |
+| `path` | `string` | Route navigated to on selection |
+| `type` | `'page' \| 'component' \| 'block' \| 'group'` | Determines rendering and copy behavior |
+| `children` | `NavigationItem[]` | Child items for `'group'` type entries |
+| `stem` | `string` \| `undefined` | File stem, used to derive component install name |
+
+<Tip>
+  Component items (`type === 'component'`) render a dashed circle icon instead of a chevron, and their selection populates the footer with an install command. Page items show a chevron and navigate without a copy payload.
+</Tip>

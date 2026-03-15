@@ -1,0 +1,154 @@
+---
+title: Steps
+description: Renders a numbered step list with a vertical line connector, commonly used for installation or setup instructions.
+---
+
+The `Steps` and `Step` components work together to create a visually numbered sequence. `Steps` provides the container with a CSS counter, and each `Step` renders as a heading that the counter increments automatically.
+
+**File locations:**
+- `app/components/content/Steps.vue`
+- `app/components/content/Step.vue`
+
+## Usage
+
+### MDC syntax
+
+```markdown
+::steps
+  ::step
+  Install dependencies
+  ::
+
+  Install the required packages:
+
+  ```bash
+  npm install reka-ui
+  ```
+
+  ::step
+  Copy the component source
+  ::
+
+  Create the file at `components/ui/button/Button.vue` and paste the source code.
+
+  ::step
+  Update import paths
+  ::
+
+  Adjust the import aliases to match your project configuration.
+::
+```
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import Steps from '@/components/content/Steps.vue'
+import Step from '@/components/content/Step.vue'
+</script>
+
+<template>
+  <Steps>
+    <Step>Install dependencies</Step>
+    <p>Run the following command:</p>
+    <pre>npm install reka-ui</pre>
+
+    <Step>Copy the source</Step>
+    <p>Add the component file to your project.</p>
+
+    <Step>Update imports</Step>
+    <p>Adjust aliases to match your setup.</p>
+  </Steps>
+</template>
+```
+
+## Examples
+
+### Installation guide
+
+The most common pattern is a three-step installation guide used inside a `DocTabsContent` panel:
+
+```markdown
+::::doc-tabs{default-value="manual"}
+  :::doc-tabs-list
+    ::doc-tabs-trigger{value="manual"}
+    Manual
+    ::
+  :::
+
+  :::doc-tabs-content{value="manual"}
+  ::steps
+    ::step
+    Install the following dependencies:
+    ::
+
+    ```bash
+    npm install reka-ui lucide-vue-next
+    ```
+
+    ::step
+    Copy the component source into your project.
+    ::
+
+    ::step
+    Update the import paths to match your project setup.
+    ::
+  ::
+  :::
+::::
+```
+
+### Custom heading level
+
+By default `Steps` targets `h3` elements. Use the `level` prop to target a different heading level when your document hierarchy requires it:
+
+```vue
+<Steps :level="2">
+  <h2>First step</h2>
+  <p>Content for step one.</p>
+
+  <h2>Second step</h2>
+  <p>Content for step two.</p>
+</Steps>
+```
+
+### With nested code blocks
+
+```markdown
+::steps
+  ::step
+  Initialize a new project
+  ::
+
+  ```bash
+  npm create vite@latest my-app -- --template vue-ts
+  cd my-app
+  ```
+
+  ::step
+  Add shadcn-vue
+  ::
+
+  ```bash
+  npx shadcn-vue@latest init
+  ```
+::
+```
+
+## API reference
+
+### Steps
+
+<ParamField path="level" type="number" default="3">
+  Heading level that the CSS counter targets. Accepts `1` through `6`. Defaults to `3` (h3 elements).
+</ParamField>
+
+### Step
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the step heading element.
+</ParamField>
+
+<Note>
+  The `Step` component renders its content as an `h3` heading by default. Any `::step` block in MDC becomes a numbered heading within the parent `::steps` container. The numbering is handled entirely by CSS counters — no JavaScript is required.
+</Note>

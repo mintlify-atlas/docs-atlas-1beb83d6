@@ -1,0 +1,126 @@
+---
+title: ComponentPreview
+description: Renders an interactive component preview alongside its source code in documentation pages.
+---
+
+The `ComponentPreview` component resolves a Vue component by name, renders it inside a preview container, and optionally displays the source code in a collapsible tab below it.
+
+**File location:** `app/components/content/ComponentPreview.vue`
+
+## Usage
+
+### MDC syntax (block)
+
+```markdown
+::component-preview
+---
+name: ButtonDemo
+description: A basic button example
+align: center
+---
+::
+```
+
+### MDC syntax (inline)
+
+```markdown
+::component-preview{name="ButtonDemo" align="end"}
+```
+
+### Vue template
+
+```vue
+<ComponentPreview name="ButtonDemo" align="center" />
+```
+
+## Component resolution
+
+The component looks up the provided `name` in this order:
+
+1. `components/demo/{name}.vue`
+2. `components/demo/{name}/index.vue`
+3. `components/ui/{name-lowercase}/{name}.vue`
+4. `components/ui/{name}.vue`
+
+If no match is found, an error message is displayed in place of the preview.
+
+<Note>
+  Demo components in `app/components/demo/` take precedence over UI components in `app/components/ui/`. Create a dedicated demo file when you want to show a specific usage example rather than the raw component.
+</Note>
+
+## Creating demo components
+
+Add a `.vue` file to `app/components/demo/`:
+
+```vue
+<!-- app/components/demo/MyButtonDemo.vue -->
+<template>
+  <div class="flex gap-2">
+    <Button>Default</Button>
+    <Button variant="outline">Outline</Button>
+  </div>
+</template>
+```
+
+Then reference it in your documentation:
+
+```markdown
+::component-preview
+---
+name: MyButtonDemo
+description: Button variants
+---
+::
+```
+
+## Examples
+
+### Hide the code tab
+
+```markdown
+::component-preview
+---
+name: ButtonDemo
+hideCode: true
+---
+::
+```
+
+### Align preview content
+
+```markdown
+::component-preview
+---
+name: BadgeDemo
+align: start
+---
+::
+```
+
+### Inline shorthand
+
+```markdown
+::component-preview{name="AlertDemo" align="center" hideCode=true}
+```
+
+## API reference
+
+<ParamField path="name" type="string" required>
+  Name of the component to look up and render. Resolved against `components/demo/` then `components/ui/`.
+</ParamField>
+
+<ParamField path="align" type="string" default="center">
+  Alignment of the rendered component inside the preview area. One of `center`, `start`, or `end`.
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional description text shown alongside the preview.
+</ParamField>
+
+<ParamField path="hideCode" type="boolean" default="false">
+  When `true`, the source code tab is hidden and only the interactive preview is shown.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the root wrapper element.
+</ParamField>

@@ -1,0 +1,102 @@
+---
+title: CommandMenuItem
+description: A search-aware command item that extends the base CommandItem with automatic visibility filtering and a highlight event for footer bar integration.
+---
+
+`CommandMenuItem` is a thin wrapper around the shadcn-vue `CommandItem` primitive. It adds two capabilities that the base component lacks: reactive visibility filtering that respects the current search query, and a `highlight` event emitted whenever keyboard or pointer focus moves to the item.
+
+It is used directly inside `CommandMenu.vue` for the **Actions** and **Blocks** groups, where items need both custom keyword matching and the footer bar copy-hint integration.
+
+**File location:** `app/components/CommandMenuItem.vue`
+
+## Usage
+
+```vue
+<script setup lang="ts">
+function onSelect() {
+  // handle selection
+}
+
+function onHighlight() {
+  // update footer hint
+}
+</script>
+
+<template>
+  <CommandMenuItem
+    value="install button"
+    :keywords="['install', 'add', 'component']"
+    @select="onSelect"
+    @highlight="onHighlight"
+  >
+    Install Button
+  </CommandMenuItem>
+</template>
+```
+
+## Props
+
+`CommandMenuItem` accepts all props from [`ListboxItemProps`](https://reka-ui.com/docs/components/listbox) (re-exported from reka-ui) plus the following:
+
+<ParamField path="value" type="string" required>
+  The primary searchable string for this item. The component checks whether `value` (concatenated with `keywords`) contains the current search query. If the query does not match, the item is hidden via `v-if`.
+</ParamField>
+
+<ParamField path="keywords" type="string[]">
+  Additional search terms that extend the match surface beyond `value`. For example, a "click to copy" item passes `['copy', 'clipboard', 'click']` so it surfaces for any of those queries.
+</ParamField>
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes merged onto the root `CommandItem` element via `cn()`.
+</ParamField>
+
+## Events
+
+| Event | Payload | Description |
+|---|---|---|
+| `select` | — | Emitted when the user presses Enter or clicks the item |
+| `highlight` | — | Emitted when the item gains focus via keyboard navigation or pointer hover |
+
+## How visibility filtering works
+
+The component reads `filterState.search` from the parent `Command` context via `useCommand()`. It computes `isVisible` by checking whether the combined string of `value` and `keywords` contains the search query (case-insensitive). When `isVisible` is `false` the item is not rendered at all, keeping the DOM clean.
+
+```typescript
+// Simplified logic from CommandMenuItem.vue
+const isVisible = computed(() => {
+  if (!filterState.search) return true
+  const extendValue = `${props.value} ${(props.keywords || []).join(' ')}`
+  return extendValue.toLowerCase().includes(filterState.search.toLowerCase())
+})
+```
+
+## How the highlight event works
+
+The component uses `useMutationObserver` from VueUse to watch for changes to the `data-highlighted` attribute on the underlying DOM element. When the attribute is added (i.e., the item receives focus), `highlight` is emitted. This approach avoids the need for explicit pointer-enter handlers.
+
+<Note>
+  The `highlight` event is used by `CommandMenu.vue` to update `selectedType` and `copyPayload`, which drive the footer bar's context-sensitive keyboard shortcut hints. If you use `CommandMenuItem` outside `CommandMenu`, you can safely ignore this event.
+</Note>
+
+## Styling
+
+The base styles applied to every `CommandMenuItem`:
+
+```
+h-9 rounded-md border border-transparent px-3 font-medium
+data-highlighted:border-input data-highlighted:bg-input/50
+data-[selected=true]:border-input data-[selected=true]:bg-input/50
+```
+
+Pass a `class` prop to extend or override:
+
+```vue
+<template>
+  <CommandMenuItem
+    value="deploy"
+    class="text-green-600"
+  >
+    Deploy to production
+  </CommandMenuItem>
+</template>
+```

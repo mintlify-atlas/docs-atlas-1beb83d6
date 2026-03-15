@@ -1,0 +1,78 @@
+---
+title: MainNav
+description: Horizontal desktop navigation that highlights the active route and renders each item as a ghost button link.
+---
+
+## Overview
+
+`MainNav` renders the desktop navigation bar. It receives an array of `{ href, name }` items and renders each one as a `NuxtLink` inside a ghost `Button`. The current route is highlighted in `text-primary`; all other links use `text-muted-foreground`.
+
+In `SiteHeader` it is hidden on mobile (`hidden lg:flex`) and shown from the `lg` breakpoint upward.
+
+**File:** `app/components/MainNav.vue`
+
+## Props
+
+<ParamField path="items" type="{ href: string; name: string }[]" required>
+  Array of navigation items. Each item requires a `href` destination and a `name` display label.
+</ParamField>
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes applied to the `<nav>` element.
+</ParamField>
+
+## Usage
+
+```vue
+<script setup lang="ts">
+import { MAIN_NAVIGATION } from '~/lib/navigation';
+</script>
+
+<template>
+  <MainNav :items="MAIN_NAVIGATION" />
+</template>
+```
+
+### Custom items
+
+```vue
+<script setup lang="ts">
+const navItems = [
+  { href: '/docs/getting-started/introduction', name: 'Docs' },
+  { href: '/docs/prose-demo', name: 'Demo' },
+  { href: '/changelog', name: 'Changelog' },
+];
+</script>
+
+<template>
+  <MainNav :items="navItems" />
+</template>
+```
+
+## Active state
+
+Active detection uses an exact match against `useRoute().path`:
+
+- **Active link:** `text-primary`
+- **Inactive link:** `text-muted-foreground hover:text-primary`
+
+<Warning>
+Active highlighting only triggers on an exact path match. For nested routes (e.g. `/docs/getting-started/introduction`), the nav item whose `href` is `/docs` will **not** be highlighted unless the current path is exactly `/docs`.
+</Warning>
+
+## Configuration
+
+Add or remove top-level nav items by editing `app/lib/navigation.ts`:
+
+```typescript
+export const MAIN_NAVIGATION: NavItem[] = [
+  { href: '/docs/getting-started/introduction', name: 'Docs' },
+  { href: '/docs/prose-demo', name: 'Demo' },
+];
+```
+
+## Notes
+
+- The `<nav>` element includes `aria-label="Main Navigation"` for accessibility.
+- Each link uses `prefetch-on="interaction"` to prefetch the route on hover/focus without eagerly loading every nav destination.
+- Button size is `sm` with `variant="ghost"` to keep the nav visually lightweight.

@@ -1,0 +1,67 @@
+---
+title: LucideIcon
+description: A wrapper component for lucide-vue-next icons that supports multiple naming conventions and automatic kebab-case to PascalCase conversion.
+---
+
+The `LucideIcon` component provides a flexible way to render Lucide icons using string names. It strips common prefixes and converts kebab-case names to PascalCase before looking up the icon in `lucide-vue-next`.
+
+**File location:** `app/components/LucideIcon.vue`
+
+## Props
+
+<ParamField path="name" type="string" required>
+  The icon name. Accepts kebab-case, `lucide:` prefixed, or `icon-` prefixed formats. The component strips the prefix and converts the name to PascalCase before resolving the icon.
+</ParamField>
+
+<ParamField path="class" type="string">
+  CSS classes to apply to the rendered icon element.
+</ParamField>
+
+<Note>
+  `LucideIcon` only exposes `name` and `class` as props. Lucide icon props such as `size`, `color`, and `strokeWidth` are not forwarded — size and style are controlled via the `class` prop or parent CSS.
+</Note>
+
+## Naming conventions
+
+The component accepts three naming formats, all of which resolve to the same icon:
+
+| Format | Example |
+| --- | --- |
+| Direct name | `house` |
+| `lucide:` prefix | `lucide:house` |
+| `icon-` prefix | `icon-house` |
+
+Kebab-case names are automatically converted to PascalCase:
+
+| Input | Resolved component |
+| --- | --- |
+| `arrow-left` | `ArrowLeft` |
+| `user-circle` | `UserCircle` |
+| `chevron-down` | `ChevronDown` |
+
+## Usage
+
+```vue
+<template>
+  <!-- All three produce the same icon -->
+  <LucideIcon name="house" />
+  <LucideIcon name="lucide:house" />
+  <LucideIcon name="icon-house" />
+
+  <!-- Kebab-case multi-word icons -->
+  <LucideIcon name="arrow-left" />
+  <LucideIcon name="chevron-right" class="size-4 text-muted-foreground" />
+</template>
+```
+
+## Finding icon names
+
+Browse the full icon catalog at [lucide.dev](https://lucide.dev/icons). Icon names on that site map directly to the `name` prop — use them in kebab-case (e.g., `arrow-up-right`, `file-text`, `circle-check`).
+
+## Integration notes
+
+`LucideIcon` is used throughout the template for sidebar navigation icons, page-level icons defined in frontmatter, and UI component icons. If the resolved icon name does not exist in `lucide-vue-next`, the component renders nothing (it returns `null` silently).
+
+<Tip>
+  The component also checks for a `${name}Icon` variant (e.g., `HomeIcon`) as a fallback, so icons exported with an `Icon` suffix in the library are still matched correctly.
+</Tip>

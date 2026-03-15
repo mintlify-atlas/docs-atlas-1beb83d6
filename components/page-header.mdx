@@ -1,0 +1,74 @@
+---
+title: PageHeader
+description: A hero section container that centers and stacks its children with responsive vertical padding.
+---
+
+## Overview
+
+`PageHeader` provides the outer section wrapper for page hero areas. It applies a `border-grid` border, a `container-wrapper` for responsive width, and a centered flex column with responsive vertical padding. It is designed to be composed with `PageHeaderHeading` and `PageHeaderDescription`.
+
+**File:** `app/components/PageHeader.vue`
+
+## Props
+
+<ParamField path="class" type="HTMLAttributes['class']">
+  Additional CSS classes merged onto the outer `<section>` element via `cn()`.
+</ParamField>
+
+## Slots
+
+| Slot | Description |
+|------|-------------|
+| `default` | Content rendered inside the centered flex container — typically `PageHeaderHeading`, `PageHeaderDescription`, and action buttons |
+
+## Usage
+
+### Basic
+
+```vue
+<template>
+  <PageHeader>
+    <PageHeaderHeading>Welcome to our docs</PageHeaderHeading>
+    <PageHeaderDescription>
+      Everything you need to build with shadcn-docs-template.
+    </PageHeaderDescription>
+  </PageHeader>
+</template>
+```
+
+### With a call-to-action button
+
+```vue
+<template>
+  <PageHeader>
+    <PageHeaderHeading>Get started quickly</PageHeaderHeading>
+    <PageHeaderDescription>
+      Follow the installation guide to set up your project.
+    </PageHeaderDescription>
+    <div class="flex gap-3 mt-2">
+      <Button as-child>
+        <NuxtLink to="/docs/getting-started/introduction">Read the docs</NuxtLink>
+      </Button>
+      <Button variant="outline" as-child>
+        <NuxtLink to="https://github.com/hetari/shadcn-docs-template">GitHub</NuxtLink>
+      </Button>
+    </div>
+  </PageHeader>
+</template>
+```
+
+## Layout details
+
+| Property | Value |
+|----------|-------|
+| Outer element | `<section>` |
+| Border | `border-grid` |
+| Container | `container-wrapper` + `container` |
+| Padding | `py-8` (mobile) · `md:py-16` · `lg:py-20` |
+| Alignment | `flex flex-col items-center text-center` |
+| Gap | `gap-2` (default) · `xl:gap-4` |
+
+## Notes
+
+- Children are stacked vertically and centered. There is no horizontal slot subdivision — add your own flex/grid wrappers inside if you need side-by-side content.
+- Use the `class` prop to override padding or add a background if you want a visually distinct hero band.

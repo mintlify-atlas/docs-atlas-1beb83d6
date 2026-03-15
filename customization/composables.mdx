@@ -1,0 +1,247 @@
+---
+title: Composables
+description: Shared Vue composables for platform detection, navigation, user preferences, and color management in the shadcn-docs-template.
+---
+
+The template ships four composables that encapsulate shared logic across the application. Each is a self-contained module you can import wherever needed.
+
+---
+
+## useIsMac
+
+**File:** `app/composables/useIsMac.ts`
+
+Detects whether the current user is on a macOS platform. Initialized to `false` on the server to avoid SSR hydration mismatches, then updated on the client after mount.
+
+### Return Value
+
+Returns a `Ref<boolean>` that is `true` when the platform string contains `"MAC"`.
+
+### Implementation
+
+```ts
+import type { Ref } from "vue";
+import { onMounted, ref } from "vue";
+
+export function useIsMac(): Ref<boolean> {
+  const isMac = ref(false);
+  onMounted(() => {
+    const nav = navigator as any;
+    const platform =
+      nav.userAgentData?.platform ?? nav.platform ?? nav.userAgent;
+    isMac.value = String(platform).toUpperCase().includes("MAC");
+  });
+  return isMac;
+}
+```
+
+The check uses `navigator.userAgentData.platform` (modern browsers) with fallbacks to `navigator.platform` and `navigator.userAgent` for maximum compatibility.
+
+### Usage Example
+
+```vue
+<script setup lang="ts">
+import { useIsMac } from "~/composables/useIsMac";
+
+const isMac = useIsMac();
+</script>
+
+<template>
+  <span>Press {{ isMac ? '⌘' : 'Ctrl' }} K to search</span>
+</template>
+```
+
+---
+
+## useNavigation
+
+**File:** `app/composables/useNavigation.ts`
+
+Transforms the raw Nuxt Content navigation structure into a typed format that the sidebar and mobile menu can consume directly. It works around a current Nuxt Content limitation with grouped content rendering.
+
+### Types
+
+```ts
+export type NavigationItemType = "page" | "component" | "block" | "group";
+
+export type NavigationItem = {
+  title: string;
+  path: string;
+  stem?: string;
+  children?: NavigationItem[];
+  page?: false;
+  type?: NavigationItemType;
+  [key: string]: unknown;
+};
+```
+
+### Type Resolution Logic
+
+| Condition | Assigned Type |
+| --- | --- |
+| Parent title is `"Components"` | `component` |
+| Parent title is `"Blocks"` | `block` |
+| Item has `children` array | `group` |
+| Everything else | `page` |
+
+### Return Value
+
+Returns `{ data }` where `data` is a reactive `Ref` containing the transformed navigation tree rooted at `/docs`.
+
+### Usage Example
+
+```vue
+<script setup lang="ts">
+import { useNavigation } from "~/composables/useNavigation";
+
+const { data: navigation } = await useNavigation();
+</script>
+
+<template>
+  <nav>
+    <ul>
+      <li v-for="group in navigation?.[0]?.children" :key="group.path">
+        {{ group.title }}
+      </li>
+    </ul>
+  </nav>
+</template>
+```
+
+<Note>
+This composable uses `useAsyncData` internally, so it must be called in a component `<script setup>` context or inside a Nuxt plugin/middleware. It is not usable outside of the Nuxt lifecycle.
+</Note>
+
+---
+
+## useConfig
+
+**File:** `app/composables/useUserConfig.ts`
+
+Manages user-specific preferences persisted in a cookie (`user-config`). Uses `createSharedComposable` so all components share the same reactive state — updating the preference in one component instantly reflects everywhere.
+
+### Types
+
+```ts
+export type Layout = "fixed" | "full";
+export type PackageManager = "pnpm" | "npm" | "yarn" | "bun";
+export type InstallationType = "cli" | "manual";
+
+export type IUserConfig = {
+  layout: Layout;
+  packageManager: PackageManager;
+  installationType: InstallationType;
+};
+```
+
+### Default Values
+
+```ts
+{
+  layout: "fixed",
+  packageManager: "pnpm",
+  installationType: "cli",
+}
+```
+
+The cookie is set with `path: "/"`, `maxAge: 31536000` (1 year), and `sameSite: "lax"`.
+
+### Return Value
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `config` | `Ref<IUserConfig>` | Reactive cookie ref containing all user preferences |
+| `isLayoutFull` | `ComputedRef<boolean>` | `true` when `config.value.layout === "full"` |
+
+### Side Effect
+
+Whenever `config.value.layout` changes, the composable immediately updates the `<html>` element's class list — removing all `layout-*` classes and adding `layout-fixed` or `layout-full`. This drives CSS-based layout switching without a page reload.
+
+### Usage Example
+
+```vue
+<script setup lang="ts">
+const { config, isLayoutFull } = useConfig();
+</script>
+
+<template>
+  <div>
+    <p>Package manager: {{ config.packageManager }}</p>
+    <button @click="config.layout = isLayoutFull ? 'fixed' : 'full'">
+      Toggle layout
+    </button>
+  </div>
+</template>
+```
+
+<Tip>
+Because `useConfig` is a shared composable, you can call it in any component without prop-drilling. The `CodeBlockCommand` component uses `config.packageManager` to sync the active tab with this same state.
+</Tip>
+
+---
+
+## useColors
+
+**File:** `app/composables/useColor.ts`
+
+Manages color format preferences and tracks the last copied color value. Preferences are stored in a cookie named `color_config`. Useful for color picker components and documentation pages that display color values in multiple formats.
+
+### Types
+
+```ts
+type ColorFormat = "hsl" | "rgb" | "hex" | "oklch";
+
+type Config = {
+  format: ColorFormat;
+  lastCopied: string;
+};
+```
+
+### Default Values
+
+```ts
+{
+  format: "hsl",
+  lastCopied: "",
+}
+```
+
+### Return Value
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `isLoading` | `ComputedRef<boolean>` | `true` until the component mounts — prevents hydration mismatches in SSR |
+| `format` | `ComputedRef<ColorFormat>` | Current color format preference |
+| `lastCopied` | `ComputedRef<string>` | Last color value copied to the clipboard |
+| `setFormat(format)` | `(format: ColorFormat) => void` | Updates the format preference |
+| `setLastCopied(color)` | `(color: string) => void` | Records the last copied color |
+
+### Usage Example
+
+```vue
+<script setup lang="ts">
+import { useColors } from "~/composables/useColor";
+
+const { format, isLoading, setFormat, setLastCopied } = useColors();
+
+function copyColor(value: string) {
+  navigator.clipboard.writeText(value);
+  setLastCopied(value);
+}
+</script>
+
+<template>
+  <div v-if="!isLoading">
+    <select :value="format" @change="setFormat($event.target.value as any)">
+      <option value="hsl">HSL</option>
+      <option value="rgb">RGB</option>
+      <option value="hex">HEX</option>
+      <option value="oklch">OKLCH</option>
+    </select>
+  </div>
+</template>
+```
+
+<Note>
+Check `isLoading` before rendering color-dependent UI to avoid showing server-rendered defaults that differ from the user's saved preference.
+</Note>

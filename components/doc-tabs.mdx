@@ -1,0 +1,185 @@
+---
+title: DocTabs
+description: A tabbed interface component for organizing documentation content such as installation methods or code variants.
+---
+
+The `DocTabs` family of components provides a styled tab interface for documentation pages. It is composed of four sub-components that mirror the Radix UI tabs primitives with a border-bottom indicator style.
+
+**File locations:**
+- `app/components/content/DocTabs.vue`
+- `app/components/content/DocTabsList.vue`
+- `app/components/content/DocTabsTrigger.vue`
+- `app/components/content/DocTabsContent.vue`
+
+## Usage
+
+### MDC syntax
+
+Nest the sub-components using increasing numbers of colons for each level:
+
+```markdown
+::::doc-tabs{default-value="cli"}
+  :::doc-tabs-list
+    ::doc-tabs-trigger{value="cli"}
+    CLI
+    ::
+
+    ::doc-tabs-trigger{value="manual"}
+    Manual
+    ::
+  :::
+
+  :::doc-tabs-content{value="cli"}
+  CLI content goes here.
+  :::
+
+  :::doc-tabs-content{value="manual"}
+  Manual content goes here.
+  :::
+::::
+```
+
+### Vue template
+
+```vue
+<script setup lang="ts">
+import DocTabs from '@/components/content/DocTabs.vue'
+import DocTabsList from '@/components/content/DocTabsList.vue'
+import DocTabsTrigger from '@/components/content/DocTabsTrigger.vue'
+import DocTabsContent from '@/components/content/DocTabsContent.vue'
+</script>
+
+<template>
+  <DocTabs default-value="cli">
+    <DocTabsList>
+      <DocTabsTrigger value="cli">CLI</DocTabsTrigger>
+      <DocTabsTrigger value="manual">Manual</DocTabsTrigger>
+    </DocTabsList>
+    <DocTabsContent value="cli">
+      CLI content here.
+    </DocTabsContent>
+    <DocTabsContent value="manual">
+      Manual content here.
+    </DocTabsContent>
+  </DocTabs>
+</template>
+```
+
+## Examples
+
+### Basic tabs
+
+```markdown
+::::doc-tabs{default-value="tab1"}
+  :::doc-tabs-list
+    ::doc-tabs-trigger{value="tab1"}
+    Tab 1
+    ::
+
+    ::doc-tabs-trigger{value="tab2"}
+    Tab 2
+    ::
+  :::
+
+  :::doc-tabs-content{value="tab1"}
+  Content for tab 1.
+  :::
+
+  :::doc-tabs-content{value="tab2"}
+  Content for tab 2.
+  :::
+::::
+```
+
+### Installation guide pattern
+
+Combine with `CodeBlockCommand` and `Steps` for a full CLI + manual install pattern:
+
+```markdown
+::::doc-tabs{default-value="cli"}
+  :::doc-tabs-list
+    ::doc-tabs-trigger{value="cli"}
+    CLI
+    ::
+
+    ::doc-tabs-trigger{value="manual"}
+    Manual
+    ::
+  :::
+
+  :::doc-tabs-content{value="cli"}
+  ::code-block-command{code="npx shadcn-vue@latest add button"}
+  :::
+
+  :::doc-tabs-content{value="manual"}
+  ::steps
+    ::step
+    Install dependencies:
+    ::
+
+    ```bash
+    npm install reka-ui
+    ```
+
+    ::step
+    Copy the source into your project.
+    ::
+
+    ::step
+    Update import paths to match your setup.
+    ::
+  ::
+  :::
+::::
+```
+
+### With CodeBlockCommand in a tab
+
+```markdown
+:::doc-tabs-content{value="cli"}
+  ::code-block-command{code="npx shadcn-vue@latest add dialog command"}
+  ::
+:::
+```
+
+## API reference
+
+### DocTabs
+
+<ParamField path="defaultValue" type="string">
+  The value of the tab that is active by default (uncontrolled).
+</ParamField>
+
+<ParamField path="modelValue" type="string">
+  Controlled active tab value. Use with `v-model` for two-way binding.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the root tabs element.
+</ParamField>
+
+### DocTabsList
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the tabs list.
+</ParamField>
+
+### DocTabsTrigger
+
+<ParamField path="value" type="string" required>
+  Unique identifier for this tab. Must match a corresponding `DocTabsContent` value.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the trigger button.
+</ParamField>
+
+### DocTabsContent
+
+<ParamField path="value" type="string" required>
+  Identifier that links this panel to its `DocTabsTrigger`.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes applied to the content panel.
+</ParamField>
